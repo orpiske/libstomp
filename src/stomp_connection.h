@@ -27,8 +27,11 @@
 #include <apr-1/apr_network_io.h>
 #include <apr-1/apr_hash.h>
 
+#include "stomp_frame.h"
+
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 typedef struct stomp_connection
@@ -40,31 +43,35 @@ typedef struct stomp_connection
     char *remote_ip;
 } stomp_connection;
 
-
-typedef struct stomp_credentials_t_ {
-    char *username; 
+typedef struct stomp_credentials_t_
+{
+    char *username;
     char *password;
 } stomp_credentials_t;
 
-typedef struct stomp_heartbeat_t_ {
+typedef struct stomp_heartbeat_t_
+{
     uint16_t send;
     uint16_t receive;
-} stomp_heartbeat_t; 
+} stomp_heartbeat_t;
 
-typedef struct stomp_connection_header_t_ {
-    stomp_credentials_t *credentials; 
+typedef struct stomp_connection_header_t_
+{
+    stomp_credentials_t *credentials;
     stomp_heartbeat_t heartbeat;
 } stomp_connection_header_t;
 
 typedef uint16_t subscription_id_t;
 
-typedef enum stomp_subscription_ack_t_ {
-    AUTO, 
+typedef enum stomp_subscription_ack_t_
+{
+    AUTO,
     CLIENT,
     CLIENT_INDIVIDUAL,
 } stomp_subscription_ack_t;
 
-typedef struct stomp_subscription_header_t_ {
+typedef struct stomp_subscription_header_t_
+{
     subscription_id_t id;
     char *destination;
     stomp_subscription_ack_t ack;
@@ -73,10 +80,32 @@ typedef struct stomp_subscription_header_t_ {
 typedef int64_t message_id_t;
 typedef int64_t transaction_id_t;
 
-typedef struct stomp_ack_header_t_ {
+typedef struct stomp_ack_header_t_
+{
     message_id_t message_id;
     transaction_id_t transaction_id;
 } stomp_ack_header_t;
+
+typedef struct stomp_transaction_header_t_
+{
+    transaction_id_t transaction_id;
+} stomp_transaction_header_t;
+
+typedef enum stomp_frame_t_
+{
+    CONNECT, CONNECTED, SEND, SUBSCRIBE, UNSUBSCRIBE, ACK, NACK, BEGIN, COMMIT,
+    ABORT, DISCONNECT, MESSAGE, RECEIPT, ERROR, STOMP = CONNECT
+} stomp_frame;
+
+typedef struct stomp_header_t_
+{
+    stomp_frame frame; 
+    union {
+        stomp_connection_header_t *connection_header;
+        stomp_subscription_header_t *subscription_header;
+        stomp_ack_header_t *ack_header;
+    } header;
+} stomp_header_t;
 
 
 

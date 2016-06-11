@@ -43,7 +43,17 @@ stomp_status_code_t stomp_unsubscribe(stomp_messenger_t *messenger,
 stomp_status_code_t stomp_ack(stomp_messenger_t *messenger, 
                                   stomp_ack_header_t *header);
 
-// stomp_status_t stomp_connect();
+stomp_status_code_t stomp_nack(stomp_messenger_t *messenger, 
+                                  stomp_ack_header_t *header);
+
+stomp_status_code_t stomp_begin(stomp_messenger_t *messenger, 
+                                  stomp_transaction_header_t *header);
+
+stomp_status_code_t stomp_commit(stomp_messenger_t *messenger, 
+                                  stomp_transaction_header_t *header);
+
+stomp_status_code_t stomp_abort(stomp_messenger_t *messenger, 
+                                  stomp_transaction_header_t *header);
 
 #endif /* STOMP_H_ */
 
