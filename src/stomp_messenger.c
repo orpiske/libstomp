@@ -51,16 +51,16 @@ void stomp_messenger_destroy(stomp_messenger_t **messenger) {
 stomp_status_code_t stomp_connect(stomp_messenger_t *messenger, 
         stomp_connection_header_t *header) 
 {
-    stomp_frame frame;
+    stomp_frame conn_frame;
     
-    frame.command = "CONNECT";
-    frame.headers = apr_hash_make(messenger->pool);
+    conn_frame.command = "CONNECT";
+    conn_frame.headers = apr_hash_make(messenger->pool);
     
     if (header != NULL) {
         if (header->credentials != NULL) {
-            apr_hash_set(frame.headers, "login", APR_HASH_KEY_STRING, 
+            apr_hash_set(conn_frame.headers, "login", APR_HASH_KEY_STRING, 
                     header->credentials->username);
-            apr_hash_set(frame.headers, "passcode", APR_HASH_KEY_STRING, 
+            apr_hash_set(conn_frame.headers, "passcode", APR_HASH_KEY_STRING, 
                     header->credentials->password);
         }
         
@@ -70,17 +70,126 @@ stomp_status_code_t stomp_connect(stomp_messenger_t *messenger,
          */
     }
 
+    apr_hash_set(conn_frame.headers, "accept-version", APR_HASH_KEY_STRING, 
+                    "1.2");
     
-    frame.body = NULL;
-    frame.body_length = -1;
+    conn_frame.body = NULL;
+    conn_frame.body_length = -1;
     
-    apr_status_t stat = stomp_write(messenger->connection, &frame, 
+    apr_status_t stat = stomp_write(messenger->connection, &conn_frame, 
             messenger->pool);
     
     if (stat != APR_SUCCESS) {
         stomp_status_set(&messenger->status, STOMP_FAILURE, 
                 "Unable to write the frame data to the underlying connection");
+        
+        return STOMP_FAILURE;
     }
     
+    
+    stomp_frame *reply_frame;
+    stat = stomp_read(messenger->connection, &reply_frame, messenger->pool);
+    if (stat != APR_SUCCESS) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE, 
+                "Unable to write the frame data to the underlying connection");
+        
+        return STOMP_FAILURE;
+    }
+    
+    const char *CONN_REPLY_STR = "CONNECTED";
+    
+    if (strncmp(reply_frame->command, CONN_REPLY_STR, strlen(CONN_REPLY_STR)) != 0) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE, 
+                "Invalid connection reply: %s", reply_frame->command);
+        
+        return STOMP_FAILURE;
+    }
+    
+    return STOMP_SUCCESS;
+}
+
+
+stomp_status_code_t stomp_subscribe(stomp_messenger_t *messenger, 
+        stomp_subscription_header_t *header) 
+{
+    stomp_frame frame;
+
+    frame.command = "SUBSCRIBE";
+    frame.headers = apr_hash_make(messenger->pool);
+    
+    if (!header->destination) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE, 
+                "Invalid connection destination: null");
+        
+        return STOMP_FAILURE;
+    }
+    
+    if (strlen(header->destination) == 0) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE, 
+                "Invalid connection destination: empty");
+        
+        return STOMP_FAILURE;
+    }
+       
+    apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, 
+            header->destination);
+    apr_hash_set(frame.headers, "id", APR_HASH_KEY_STRING, 
+            header->id);
+    
+    frame.body_length = -1;
+    frame.body = NULL;
+    
+    apr_status_t stat = stomp_write(messenger->connection, &frame, messenger->pool);
+    if (stat != APR_SUCCESS) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE, 
+                "Unable to write the frame data to the underlying connection");
+        
+        return STOMP_FAILURE;
+    }
+
+    return STOMP_SUCCESS;
+}
+
+
+stomp_status_code_t stomp_unsubscribe(stomp_messenger_t *messenger, 
+                                  stomp_subscription_header_t *header)
+{
+    stomp_frame frame;
+
+    frame.command = "UNSUBSCRIBE";
+    frame.headers = apr_hash_make(messenger->pool);
+    
+    if (!header->destination) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE, 
+                "Invalid connection destination: null");
+        
+        return STOMP_FAILURE;
+    }
+    
+    if (strlen(header->destination) == 0) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE, 
+                "Invalid connection destination: empty");
+        
+        return STOMP_FAILURE;
+    }
+       
+    apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, 
+            header->destination);
+    apr_hash_set(frame.headers, "id", APR_HASH_KEY_STRING, 
+            header->id);
+    
+    // TODO: handle the ACK
+    
+    frame.body_length = -1;
+    frame.body = NULL;
+    
+    apr_status_t stat = stomp_write(messenger->connection, &frame, messenger->pool);
+    if (stat != APR_SUCCESS) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE, 
+                "Unable to write the frame data to the underlying connection");
+        
+        return STOMP_FAILURE;
+    }
+
     return STOMP_SUCCESS;
 }

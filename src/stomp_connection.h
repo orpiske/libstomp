@@ -56,6 +56,20 @@ typedef struct stomp_connection_header_t_ {
     stomp_heartbeat_t heartbeat;
 } stomp_connection_header_t;
 
+typedef uint16_t subscription_id_t;
+
+typedef enum stomp_subscription_ack_t_ {
+    AUTO, 
+    CLIENT,
+    CLIENT_INDIVIDUAL,
+} stomp_subscription_ack_t;
+
+typedef struct stomp_subscription_header_t_ {
+    subscription_id_t id;
+    char *destination;
+    stomp_subscription_ack_t ack;
+} stomp_subscription_header_t;
+
 #ifdef __cplusplus
 }
 #endif
