@@ -1,0 +1,46 @@
+Overview
+
+Using libstomp is as simple as:
+
+    Initializing APR
+    Establishing a stomp connection
+    Reading and writting simple stomp frames
+    Disconnecting
+    APR shutdown
+
+See the libstomp Examples
+Initializing APR
+
+The following snipplet of code initializes the APR runtime.
+apr_status_t rc;
+rc = apr_initialize();
+Establish the Stomp Connection
+
+Here's what's required to establish the Stomp connection. Notice that an APR memory pool is used to allocate the connection.
+stomp_connection *connection;
+apr_pool_t *pool;
+ 
+rc = apr_pool_create(&pool, NULL);
+rc=stomp_connect( &connection, "localhost", 41414, pool);
+Reading and Writting Simple Stomp Frames
+
+A Stomp frame is made up of 3 parts: a command, a set of header properties, and a body. Here's how you can initialize the frame and write it to the connection.
+stomp_frame frame;
+frame.command = "CONNECT";
+frame.headers = apr_hash_make(pool);
+apr_hash_set(frame.headers, "login", APR_HASH_KEY_STRING, "hchirino");         
+apr_hash_set(frame.headers, "passcode", APR_HASH_KEY_STRING, "letmein");         
+frame.body = NULL;
+rc = stomp_write(connection, &frame);
+
+To read a Stomp frame from the connection:
+stomp_frame *frame;
+rc = stomp_read(connection, &frame, pool);
+Disconnecting
+
+Closing a connection that was previously created with stomp_connect is done with:
+rc=stomp_disconnect(&connection);
+APR Shutdown
+
+Shutting down APR is simply done using:
+apr_terminate();
