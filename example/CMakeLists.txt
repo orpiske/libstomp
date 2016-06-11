@@ -5,12 +5,22 @@ if (${CMAKE_SYSTEM_NAME} EQUAL "Linux")
 endif (${CMAKE_SYSTEM_NAME} EQUAL "Linux") 
 
 add_executable(
-	stomp-example
-	main.c
+	server
+	server.c
+)
+
+add_executable(
+	client
+	client.c
 )
 
 target_link_libraries(
-	stomp-example
+	server
+	stomp
+)
+
+target_link_libraries(
+	client
 	stomp
 )
 

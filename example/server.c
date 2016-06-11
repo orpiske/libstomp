@@ -57,8 +57,8 @@ int main(int argc, char *argv[])
         stomp_frame frame;
         frame.command = "CONNECT";
         frame.headers = apr_hash_make(pool);
-        apr_hash_set(frame.headers, "login", APR_HASH_KEY_STRING, "hchirino");
-        apr_hash_set(frame.headers, "passcode", APR_HASH_KEY_STRING, "letmein");
+        // apr_hash_set(frame.headers, "login", APR_HASH_KEY_STRING, "hchirino");
+        // apr_hash_set(frame.headers, "passcode", APR_HASH_KEY_STRING, "letmein");
         frame.body = NULL;
         frame.body_length = -1;
         rc = stomp_write(connection, &frame, pool);
@@ -73,6 +73,7 @@ int main(int argc, char *argv[])
         fprintf(stdout, "Response: %s, %s\n", frame->command, frame->body);
     }
     fprintf(stdout, "OK\n");
+    
 
     fprintf(stdout, "Sending Subscribe.");
     {
@@ -87,26 +88,13 @@ int main(int argc, char *argv[])
     }
     fprintf(stdout, "OK\n");
 
-    fprintf(stdout, "Sending Message.");
-    {
-        stomp_frame frame;
-        frame.command = "SEND";
-        frame.headers = apr_hash_make(pool);
-        apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, "/queue/FOO.BAR");
-
-        frame.body_length = -1;
-        frame.body = "This is the message";
-        rc = stomp_write(connection, &frame, pool);
-        rc == APR_SUCCESS || die(-2, "Could not send frame", rc);
-    }
-    fprintf(stdout, "OK\n");
-
     fprintf(stdout, "Reading Response.");
     {
         stomp_frame *frame;
         rc = stomp_read(connection, &frame, pool);
         rc == APR_SUCCESS || die(-2, "Could not read frame", rc);
         fprintf(stdout, "Response: %s, %s\n", frame->command, frame->body);
+        fprintf(stdout, "Body: %s", frame->body);
     }
     fprintf(stdout, "OK\n");
 
