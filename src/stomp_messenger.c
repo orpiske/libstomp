@@ -193,3 +193,37 @@ stomp_status_code_t stomp_unsubscribe(stomp_messenger_t *messenger,
 
     return STOMP_SUCCESS;
 }
+
+
+stomp_status_code_t stomp_ack(stomp_messenger_t *messenger, 
+                                  stomp_ack_header_t *header)
+{
+    stomp_frame frame;
+
+    frame.command = "UNSUBSCRIBE";
+    frame.headers = apr_hash_make(messenger->pool);
+    
+
+    apr_hash_set(frame.headers, "id", APR_HASH_KEY_STRING, 
+            header->message_id);
+    
+    if (header->transaction_id > -1) { 
+        apr_hash_set(frame.headers, "transaction", APR_HASH_KEY_STRING, 
+                header->transaction_id);
+    }
+    
+    // TODO: handle the ACK
+    
+    frame.body_length = -1;
+    frame.body = NULL;
+    
+    apr_status_t stat = stomp_write(messenger->connection, &frame, messenger->pool);
+    if (stat != APR_SUCCESS) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE, 
+                "Unable to write the frame data to the underlying connection");
+        
+        return STOMP_FAILURE;
+    }
+
+    return STOMP_SUCCESS;
+}

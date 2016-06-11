@@ -70,6 +70,17 @@ typedef struct stomp_subscription_header_t_ {
     stomp_subscription_ack_t ack;
 } stomp_subscription_header_t;
 
+typedef int64_t message_id_t;
+typedef int64_t transaction_id_t;
+
+typedef struct stomp_ack_header_t_ {
+    message_id_t message_id;
+    transaction_id_t transaction_id;
+} stomp_ack_header_t;
+
+
+
+
 #ifdef __cplusplus
 }
 #endif

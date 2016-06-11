@@ -40,6 +40,9 @@ stomp_status_code_t stomp_subscribe(stomp_messenger_t *messenger,
 stomp_status_code_t stomp_unsubscribe(stomp_messenger_t *messenger, 
                                   stomp_subscription_header_t *header);
 
+stomp_status_code_t stomp_ack(stomp_messenger_t *messenger, 
+                                  stomp_ack_header_t *header);
+
 // stomp_status_t stomp_connect();
 
 #endif /* STOMP_H_ */
