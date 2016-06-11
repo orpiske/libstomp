@@ -22,22 +22,25 @@
 #include <apr-1/apr_hash.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif /* __cplusplus */
-   
-typedef struct stomp_connection {
-      apr_socket_t *socket;      
-      apr_sockaddr_t *local_sa;
-      char *local_ip;      
-      apr_sockaddr_t *remote_sa;
-      char *remote_ip;	
+
+typedef struct stomp_connection
+{
+    apr_socket_t *socket;
+    apr_sockaddr_t *local_sa;
+    char *local_ip;
+    apr_sockaddr_t *remote_sa;
+    char *remote_ip;
 } stomp_connection;
 
-typedef struct stomp_frame {
-   char *command;
-   apr_hash_t *headers;
-   char *body;
-   apr_size_t body_length;
+typedef struct stomp_frame
+{
+    char *command;
+    apr_hash_t *headers;
+    char *body;
+    apr_size_t body_length;
 } stomp_frame;
 
 
