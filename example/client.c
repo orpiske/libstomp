@@ -16,7 +16,7 @@
  */
 
 #include <stdlib.h>
-#include "stomp.h"
+#include "stomp_engine.h"
 
 int die(int exitCode, const char *message, apr_status_t reason)
 {
