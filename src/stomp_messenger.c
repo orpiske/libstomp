@@ -116,7 +116,7 @@ stomp_status_code_t stomp_disconnect(stomp_messenger_t *messenger,
     frame.headers = apr_hash_make(messenger->pool);
 
     apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING,
-            header->receipt);
+            apr_itoa(messenger->pool, header->receipt));
   
     frame.body_length = -1;
     frame.body = NULL;
@@ -167,7 +167,7 @@ stomp_status_code_t stomp_subscribe(stomp_messenger_t *messenger,
     apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING,
             header->destination);
     apr_hash_set(frame.headers, "id", APR_HASH_KEY_STRING,
-            header->id);
+            apr_itoa(messenger->pool, header->id));
 
     frame.body_length = -1;
     frame.body = NULL;
@@ -329,4 +329,66 @@ stomp_status_code_t stomp_abort(stomp_messenger_t *messenger,
         stomp_transaction_header_t *header)
 {
     return stomp_transaction(messenger, header, "ABORT");
+}
+
+stomp_status_code_t stomp_send(stomp_messenger_t *messenger, 
+                                  stomp_send_header_t *header, 
+                                  stomp_message_t *message)
+{
+    stomp_frame frame;
+    frame.command = "SEND";
+    frame.headers = apr_hash_make(messenger->pool);
+    
+    
+    apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, 
+            header->destination);
+
+    frame.body_length = message->size;
+    frame.body = message->body;
+    
+    if (header->transaction_id > -1) {
+        apr_hash_set(frame.headers, "transaction", APR_HASH_KEY_STRING,
+                header->transaction_id);
+    }
+    
+    apr_status_t stat = stomp_write(messenger->connection, &frame, messenger->pool);
+    if (stat != APR_SUCCESS) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE,
+                "Unable to write the frame data to the underlying connection");
+
+        return STOMP_FAILURE;
+    }
+
+    return STOMP_SUCCESS;
+}
+
+stomp_status_code_t stomp_receive(stomp_messenger_t *messenger, 
+                                  stomp_receive_header_t *header,
+                                  stomp_message_t *message)
+{
+    stomp_frame *frame;
+    
+    apr_status_t stat = stomp_read(messenger->connection, &frame, messenger->pool);
+    if (stat == APR_SUCCESS) {
+        if (strncmp(frame->command, "MESSAGE", strlen("MESSAGE")) == 0) {
+            strncpy(message->body, frame->body, frame->body_length);
+            message->size = frame->body_length;
+            
+            return STOMP_SUCCESS;
+        }
+        else {
+            // TODO: handle error condition
+            strncpy(message->body, frame->body, frame->body_length);
+            message->size = frame->body_length;
+            
+            return STOMP_FAILURE;
+        }
+    }
+    else {
+        stomp_status_set(&messenger->status, STOMP_FAILURE,
+                "Unable to read the frame data to the underlying connection");
+
+        return STOMP_FAILURE;
+    }
+    
 }

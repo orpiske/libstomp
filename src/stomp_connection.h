@@ -98,6 +98,18 @@ typedef struct stomp_transaction_header_t_
     transaction_id_t transaction_id;
 } stomp_transaction_header_t;
 
+typedef struct stomp_send_header_t_
+{
+    char *destination;
+    char *content_type;
+    transaction_id_t transaction_id;
+} stomp_send_header_t;
+
+
+typedef struct stomp_receive_header_t_
+{
+    
+} stomp_receive_header_t;
 
 #ifdef __STOMP_DISABLED__
 typedef enum stomp_frame_t_

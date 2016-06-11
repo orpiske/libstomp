@@ -16,6 +16,10 @@
 #ifndef STOMP_H_
 #define STOMP_H_
 
+#include <apr-1/apr_general.h>
+#include <apr-1/apr_network_io.h>
+#include <apr-1/apr_hash.h>
+
 #include "stomp_status.h"
 #include "stomp_connection.h"
 #include "stomp_frame.h"
@@ -27,6 +31,11 @@ typedef struct stomp_messenger_t_ {
     stomp_status_t status;
     apr_pool_t *pool;
 } stomp_messenger_t;
+
+typedef struct stomp_message_t_ {
+    size_t size; 
+    char *body;
+} stomp_message_t;
 
 stomp_messenger_t *stomp_messenger_init();
 void stomp_messenger_destroy(stomp_messenger_t **messenger);
@@ -57,6 +66,14 @@ stomp_status_code_t stomp_commit(stomp_messenger_t *messenger,
 
 stomp_status_code_t stomp_abort(stomp_messenger_t *messenger, 
                                   stomp_transaction_header_t *header);
+
+stomp_status_code_t stomp_send(stomp_messenger_t *messenger, 
+                                  stomp_send_header_t *header, 
+                                  stomp_message_t *message);
+
+stomp_status_code_t stomp_message(stomp_messenger_t *messenger, 
+                                  stomp_receive_header_t *header,
+                                  stomp_message_t *message);
 
 #endif /* STOMP_H_ */
 
