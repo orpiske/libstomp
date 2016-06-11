@@ -30,6 +30,8 @@ typedef struct stomp_messenger_t_ {
     stomp_connection *connection;
     stomp_status_t status;
     apr_pool_t *pool;
+    char *address; 
+    uint16_t port;
 } stomp_messenger_t;
 
 typedef struct stomp_message_t_ {

@@ -5,22 +5,32 @@ if (${CMAKE_SYSTEM_NAME} EQUAL "Linux")
 endif (${CMAKE_SYSTEM_NAME} EQUAL "Linux") 
 
 add_executable(
-	server
+	engine-server
 	engine/server.c
 )
 
 add_executable(
-	client
+	engine-client
 	engine/client.c
 )
 
+add_executable(
+	messenger-client
+	messenger/client.c
+)
+
 target_link_libraries(
-	server
+	engine-server
 	stomp
 )
 
 target_link_libraries(
-	client
+	engine-client
+	stomp
+)
+
+target_link_libraries(
+	messenger-client
 	stomp
 )
 

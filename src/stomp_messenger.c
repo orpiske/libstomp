@@ -37,6 +37,18 @@ stomp_messenger_t *stomp_messenger_init()
 
     ret->connection = NULL;
     stomp_status_success(&ret->status);
+    
+    status = apr_pool_create(&ret->pool, NULL);
+    if (status != APR_SUCCESS) {
+        // TODO: collect the error from APR
+
+        stomp_status_set(&ret->status, STOMP_FAILURE,
+                "Unable to initialize the APR pool");
+
+        return ret;
+    }
+
+    
 
     return ret;
 }
@@ -52,6 +64,16 @@ stomp_status_code_t stomp_connect(stomp_messenger_t *messenger,
         stomp_connection_header_t *header)
 {
     stomp_frame conn_frame;
+    
+    apr_status_t stat = stomp_engine_connect(&messenger->connection, 
+            messenger->address, messenger->port, messenger->pool);
+    
+    if (stat != APR_SUCCESS) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE,
+                "Unable to connect to the broker service");
+
+        return STOMP_FAILURE;
+    }
 
     conn_frame.command = "CONNECT";
     conn_frame.headers = apr_hash_make(messenger->pool);
@@ -76,7 +98,7 @@ stomp_status_code_t stomp_connect(stomp_messenger_t *messenger,
     conn_frame.body = NULL;
     conn_frame.body_length = -1;
 
-    apr_status_t stat = stomp_write(messenger->connection, &conn_frame,
+    stat = stomp_write(messenger->connection, &conn_frame,
             messenger->pool);
 
     if (stat != APR_SUCCESS) {
@@ -115,8 +137,10 @@ stomp_status_code_t stomp_disconnect(stomp_messenger_t *messenger,
     frame.command = "DISCONNECT";
     frame.headers = apr_hash_make(messenger->pool);
 
-    apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING,
-            apr_itoa(messenger->pool, header->receipt));
+    if (header != NULL) { 
+        apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING,
+                apr_itoa(messenger->pool, header->receipt));
+    }
   
     frame.body_length = -1;
     frame.body = NULL;
@@ -130,8 +154,16 @@ stomp_status_code_t stomp_disconnect(stomp_messenger_t *messenger,
     }
     
     const char *DISCONN_REPLY_STR = "RECEIPT";
+    
     stomp_frame *reply_frame;
+    stat = stomp_read(messenger->connection, &reply_frame, messenger->pool);
+    if (stat != APR_SUCCESS) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE,
+                "Unable to read the frame data to the underlying connection");
 
+        return STOMP_FAILURE;
+    }
+    
     if (strncmp(reply_frame->command, DISCONN_REPLY_STR, strlen(DISCONN_REPLY_STR)) != 0) {
         stomp_status_set(&messenger->status, STOMP_FAILURE,
                 "Invalid disconnection reply: %s", reply_frame->command);
