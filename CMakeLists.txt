@@ -30,6 +30,7 @@ endif (${CMAKE_SYSTEM_NAME} EQUAL "Linux")
 
 add_library(
 	stomp SHARED
+        src/stomp_io.c
         src/stomp_engine.c
 )
 

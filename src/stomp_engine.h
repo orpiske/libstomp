@@ -17,39 +17,29 @@
 #ifndef STOMP_H
 #define STOMP_H
 
+
+#include <stdlib.h>
+#include <string.h>
+#include <apr-1/apr.h>
+#include <apr-1/apr_strings.h>
 #include <apr-1/apr_general.h>
 #include <apr-1/apr_network_io.h>
 #include <apr-1/apr_hash.h>
+
+#include "stomp_connection.h"
+#include "stomp_frame.h"
+#include "stomp_io.h"
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif /* __cplusplus */
 
-typedef struct stomp_connection
-{
-    apr_socket_t *socket;
-    apr_sockaddr_t *local_sa;
-    char *local_ip;
-    apr_sockaddr_t *remote_sa;
-    char *remote_ip;
-} stomp_connection;
-
-typedef struct stomp_frame
-{
-    char *command;
-    apr_hash_t *headers;
-    char *body;
-    apr_size_t body_length;
-} stomp_frame;
-
-
 
 APR_DECLARE(apr_status_t) stomp_engine_connect(stomp_connection **connection_ref, const char *hostname, int port, apr_pool_t *pool);
 APR_DECLARE(apr_status_t) stomp_engine_disconnect(stomp_connection **connection_ref);
 
-APR_DECLARE(apr_status_t) stomp_write(stomp_connection *connection, stomp_frame *frame, apr_pool_t *pool);
-APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection, stomp_frame **frame, apr_pool_t *pool);
+
 
 #ifdef __cplusplus
 }
