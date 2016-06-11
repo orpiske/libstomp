@@ -13,6 +13,14 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
+ * 
+ * ********************************************************************
+ * The original content of this file has been modified to that it was split in 
+ * different files: stomp_io.c, stomp_io.h, stomp_connection.h, stomp_frame.h. 
+ * 
+ * This file, itself, was renamed from stomp.c to stomp_engine.h. Additionally
+ * the contents of this file were modified in order to match the project 
+ * formatting guidelines.
  */
 
 #include "stomp_engine.h"
