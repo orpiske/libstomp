@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
     rc == APR_SUCCESS || die(-2, "Could not allocate pool", rc);
 
     fprintf(stdout, "Connecting......");
-    rc = stomp_connect(&connection, "localhost", 61613, pool);
+    rc = stomp_engine_connect(&connection, "localhost", 61613, pool);
     rc == APR_SUCCESS || die(-2, "Could not connect", rc);
     fprintf(stdout, "OK\n");
 
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
     fprintf(stdout, "OK\n");
 
     fprintf(stdout, "Disconnecting...");
-    rc = stomp_disconnect(&connection);
+    rc = stomp_engine_disconnect(&connection);
     rc == APR_SUCCESS || die(-2, "Could not disconnect", rc);
     fprintf(stdout, "OK\n");
 

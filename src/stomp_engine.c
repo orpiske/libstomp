@@ -26,7 +26,7 @@
  * Used to establish a connection
  *
  ********************************************************************************/
-APR_DECLARE(apr_status_t) stomp_connect(stomp_connection **connection_ref, const char *hostname, int port, apr_pool_t *pool)
+APR_DECLARE(apr_status_t) stomp_engine_connect(stomp_connection **connection_ref, const char *hostname, int port, apr_pool_t *pool)
 {
     apr_status_t rc;
     int socket_family;
@@ -73,7 +73,7 @@ APR_DECLARE(apr_status_t) stomp_connect(stomp_connection **connection_ref, const
     return rc;
 }
 
-APR_DECLARE(apr_status_t) stomp_disconnect(stomp_connection **connection_ref)
+APR_DECLARE(apr_status_t) stomp_engine_disconnect(stomp_connection **connection_ref)
 {
     apr_status_t result, rc;
     stomp_connection *connection = *connection_ref;
