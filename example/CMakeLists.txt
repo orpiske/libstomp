@@ -6,12 +6,12 @@ endif (${CMAKE_SYSTEM_NAME} EQUAL "Linux")
 
 add_executable(
 	server
-	server.c
+	engine/server.c
 )
 
 add_executable(
 	client
-	client.c
+	engine/client.c
 )
 
 target_link_libraries(

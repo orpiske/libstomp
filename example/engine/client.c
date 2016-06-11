@@ -74,19 +74,6 @@ int main(int argc, char *argv[])
     }
     fprintf(stdout, "OK\n");
 
-    fprintf(stdout, "Sending Subscribe.");
-    {
-        stomp_frame frame;
-        frame.command = "SUB";
-        frame.headers = apr_hash_make(pool);
-        apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, "/queue/FOO.BAR");
-        frame.body_length = -1;
-        frame.body = NULL;
-        rc = stomp_write(connection, &frame, pool);
-        rc == APR_SUCCESS || die(-2, "Could not send frame", rc);
-    }
-    fprintf(stdout, "OK\n");
-
     fprintf(stdout, "Sending Message.");
     {
         stomp_frame frame;
