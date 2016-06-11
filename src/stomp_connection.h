@@ -61,6 +61,13 @@ typedef struct stomp_connection_header_t_
     stomp_heartbeat_t heartbeat;
 } stomp_connection_header_t;
 
+typedef uint32_t receipt_t;
+
+typedef struct stomp_disconnection_header_t_
+{
+    receipt_t receipt;
+} stomp_disconnection_header_t;
+
 typedef uint16_t subscription_id_t;
 
 typedef enum stomp_subscription_ack_t_
@@ -91,10 +98,12 @@ typedef struct stomp_transaction_header_t_
     transaction_id_t transaction_id;
 } stomp_transaction_header_t;
 
+
+#ifdef __STOMP_DISABLED__
 typedef enum stomp_frame_t_
 {
     CONNECT, CONNECTED, SEND, SUBSCRIBE, UNSUBSCRIBE, ACK, NACK, BEGIN, COMMIT,
-    ABORT, DISCONNECT, MESSAGE, RECEIPT, ERROR, STOMP = CONNECT
+    ABORT, DISCONNECT, MESSAGE, RECEIPT, ERROR, STOMP = CONNECT,
 } stomp_frame;
 
 typedef struct stomp_header_t_
@@ -107,7 +116,7 @@ typedef struct stomp_header_t_
     } header;
 } stomp_header_t;
 
-
+#endif
 
 
 #ifdef __cplusplus

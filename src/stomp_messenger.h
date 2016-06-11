@@ -34,6 +34,9 @@ void stomp_messenger_destroy(stomp_messenger_t **messenger);
 stomp_status_code_t stomp_connect(stomp_messenger_t *messenger, 
                                   stomp_connection_header_t *header);
 
+stomp_status_code_t stomp_disconnect(stomp_messenger_t *messenger, 
+                                  stomp_disconnection_header_t *header);
+
 stomp_status_code_t stomp_subscribe(stomp_messenger_t *messenger, 
                                   stomp_subscription_header_t *header);
 

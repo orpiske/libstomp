@@ -108,6 +108,40 @@ stomp_status_code_t stomp_connect(stomp_messenger_t *messenger,
     return STOMP_SUCCESS;
 }
 
+stomp_status_code_t stomp_disconnect(stomp_messenger_t *messenger, 
+                                  stomp_disconnection_header_t *header) {
+    stomp_frame frame;
+
+    frame.command = "DISCONNECT";
+    frame.headers = apr_hash_make(messenger->pool);
+
+    apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING,
+            header->receipt);
+  
+    frame.body_length = -1;
+    frame.body = NULL;
+
+    apr_status_t stat = stomp_write(messenger->connection, &frame, messenger->pool);
+    if (stat != APR_SUCCESS) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE,
+                "Unable to write the frame data to the underlying connection");
+
+        return STOMP_FAILURE;
+    }
+    
+    const char *DISCONN_REPLY_STR = "RECEIPT";
+    stomp_frame *reply_frame;
+
+    if (strncmp(reply_frame->command, DISCONN_REPLY_STR, strlen(DISCONN_REPLY_STR)) != 0) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE,
+                "Invalid disconnection reply: %s", reply_frame->command);
+
+        return STOMP_FAILURE;
+    }
+
+    return STOMP_SUCCESS;
+}
+
 stomp_status_code_t stomp_subscribe(stomp_messenger_t *messenger,
         stomp_subscription_header_t *header)
 {
