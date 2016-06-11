@@ -22,8 +22,8 @@
  * the contents of this file were modified in order to match the project 
  * formatting guidelines.
  */
-#ifndef STOMP_H
-#define STOMP_H
+#ifndef STOMP_ENGINE_H
+#define STOMP_ENGINE_H
 
 
 #include <stdlib.h>
@@ -53,4 +53,4 @@ APR_DECLARE(apr_status_t) stomp_engine_disconnect(stomp_connection **connection_
 }
 #endif
 
-#endif  /* ! STOMP_H */
+#endif  /* ! STOMP_ENGINE_H */

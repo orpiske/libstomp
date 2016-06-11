@@ -16,7 +16,9 @@
  * 
  * ********************************************************************
  * The contents of this file are part of the original stomp.c and stomp.h file 
- * from which this code is derived
+ * from which this code is derived. The contents of the file have been modified 
+ * to comply with project formatting, as well as additions for connection 
+ * credentials
  */
 #ifndef STOMP_CONNECTION_H
 #define STOMP_CONNECTION_H
@@ -38,6 +40,21 @@ typedef struct stomp_connection
     char *remote_ip;
 } stomp_connection;
 
+
+typedef struct stomp_credentials_t_ {
+    char *username; 
+    char *password;
+} stomp_credentials_t;
+
+typedef struct stomp_heartbeat_t_ {
+    uint16_t send;
+    uint16_t receive;
+} stomp_heartbeat_t; 
+
+typedef struct stomp_connection_header_t_ {
+    stomp_credentials_t *credentials; 
+    stomp_heartbeat_t heartbeat;
+} stomp_connection_header_t;
 
 #ifdef __cplusplus
 }
