@@ -153,22 +153,25 @@ stomp_status_code_t stomp_disconnect(stomp_messenger_t *messenger,
         return STOMP_FAILURE;
     }
     
-    const char *DISCONN_REPLY_STR = "RECEIPT";
-    
-    stomp_frame *reply_frame;
-    stat = stomp_read(messenger->connection, &reply_frame, messenger->pool);
-    if (stat != APR_SUCCESS) {
-        stomp_status_set(&messenger->status, STOMP_FAILURE,
-                "Unable to read the frame data to the underlying connection");
+    if (header != NULL) {
+        const char *DISCONN_REPLY_STR = "RECEIPT";
 
-        return STOMP_FAILURE;
-    }
-    
-    if (strncmp(reply_frame->command, DISCONN_REPLY_STR, strlen(DISCONN_REPLY_STR)) != 0) {
-        stomp_status_set(&messenger->status, STOMP_FAILURE,
-                "Invalid disconnection reply: %s", reply_frame->command);
+        stomp_frame *reply_frame;
+        stat = stomp_read(messenger->connection, &reply_frame, messenger->pool);
+        if (stat != APR_SUCCESS) {
+            stomp_status_set(&messenger->status, STOMP_FAILURE,
+                    "Unable to read the frame data to the underlying connection: %s", 
+                    reply_frame->command);
 
-        return STOMP_FAILURE;
+            return STOMP_FAILURE;
+        }
+
+        if (strncmp(reply_frame->command, DISCONN_REPLY_STR, strlen(DISCONN_REPLY_STR)) != 0) {
+            stomp_status_set(&messenger->status, STOMP_FAILURE,
+                    "Invalid disconnection reply: %s", reply_frame->command);
+
+            return STOMP_FAILURE;
+        }
     }
 
     return STOMP_SUCCESS;
