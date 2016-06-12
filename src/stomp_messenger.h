@@ -19,19 +19,21 @@
 #include <apr-1/apr_general.h>
 #include <apr-1/apr_network_io.h>
 #include <apr-1/apr_hash.h>
+#include <apr-1/apr_uri.h>
 
 #include "stomp_status.h"
 #include "stomp_connection.h"
+#include "stomp_engine.h"
 #include "stomp_frame.h"
 #include "stomp_io.h"
 
+typedef apr_uri_t stomp_uri_t;
 
 typedef struct stomp_messenger_t_ {
     stomp_connection *connection;
     stomp_status_t status;
     apr_pool_t *pool;
-    char *address; 
-    uint16_t port;
+    stomp_uri_t uri;
 } stomp_messenger_t;
 
 typedef struct stomp_message_t_ {
@@ -39,8 +41,12 @@ typedef struct stomp_message_t_ {
     char *body;
 } stomp_message_t;
 
+
 stomp_messenger_t *stomp_messenger_init();
 void stomp_messenger_destroy(stomp_messenger_t **messenger);
+
+stomp_status_code_t stomp_set_endpoint(stomp_messenger_t *messenger, 
+        const char *uri);
 
 stomp_status_code_t stomp_connect(stomp_messenger_t *messenger, 
                                   stomp_connection_header_t *header);

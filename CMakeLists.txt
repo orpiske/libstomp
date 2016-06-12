@@ -39,6 +39,7 @@ add_library(
 target_link_libraries(
     stomp
     apr-1
+    aprutil-1
 )
 
 add_subdirectory(example)

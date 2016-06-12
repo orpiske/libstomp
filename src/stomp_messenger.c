@@ -60,13 +60,29 @@ void stomp_messenger_destroy(stomp_messenger_t **messenger)
     *messenger = NULL;
 }
 
+stomp_status_code_t stomp_set_endpoint(stomp_messenger_t *messenger, const char *uri)
+{
+    //fprintf(stderr, "Parsing URI: %s", uri);
+    apr_status_t stat = apr_uri_parse(messenger->pool, *uri, &messenger->uri);
+    //fprintf(stderr, "Done: %s:%d\n", messenger->uri.hostname, messenger->uri.port);
+    
+    if (stat != APR_SUCCESS) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE,
+                "Unable to parse the URI");
+
+        return STOMP_FAILURE;
+    }
+}
+
 stomp_status_code_t stomp_connect(stomp_messenger_t *messenger,
         stomp_connection_header_t *header)
 {
     stomp_frame conn_frame;
     
+    fprintf(stderr, "Connecting to %s\n", messenger->uri.hostname);
+    
     apr_status_t stat = stomp_engine_connect(&messenger->connection, 
-            messenger->address, messenger->port, messenger->pool);
+            messenger->uri.hostname, messenger->uri.port, messenger->pool);
     
     if (stat != APR_SUCCESS) {
         stomp_status_set(&messenger->status, STOMP_FAILURE,
@@ -376,7 +392,8 @@ stomp_status_code_t stomp_send(stomp_messenger_t *messenger,
     
     
     apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, 
-            header->destination);
+            messenger->uri.path);
+    
 
     frame.body_length = message->size;
     frame.body = message->body;

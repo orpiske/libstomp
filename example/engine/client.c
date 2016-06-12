@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
         stomp_frame frame;
         frame.command = "SEND";
         frame.headers = apr_hash_make(pool);
-        apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, "/queue/FOO.BAR");
+        apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, "/queue/test.stomp.queue");
 
         frame.body_length = -1;
         frame.body = "This is the message";

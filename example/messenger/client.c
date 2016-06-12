@@ -30,8 +30,14 @@ int main(int argc, char **argv) {
         goto failure;
     }
     
-    messenger->address = "localhost";
-    messenger->port = 61613;
+    stat = stomp_set_endpoint(messenger, "stomp://localhost:61613/test.stomp.queue");
+    if (stat != STOMP_SUCCESS) {
+        fprintf(stderr, messenger->status.message);
+        
+        goto failure;
+    }
+    // messenger->address = "localhost";
+    // messenger->port = 61613;
     
     stat = stomp_connect(messenger, NULL);
     if (stat != STOMP_SUCCESS) {
@@ -46,7 +52,7 @@ int main(int argc, char **argv) {
     
     stomp_send_header_t send_header; 
     
-    send_header.destination = "test.stomp.queue";
+    // send_header.destination = "test.stomp.queue";
     send_header.transaction_id = -1;
     
     stat = stomp_send(messenger, &send_header, message);
