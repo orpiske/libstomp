@@ -47,6 +47,7 @@ int main(int argc, char **argv) {
     stomp_send_header_t send_header; 
     
     send_header.destination = "test.stomp.queue";
+    send_header.transaction_id = -1;
     
     stat = stomp_send(messenger, &send_header, message);
     if (stat != STOMP_SUCCESS) {
