@@ -49,7 +49,6 @@ stomp_messenger_t *stomp_messenger_init()
     }
 
     
-
     return ret;
 }
 
@@ -62,8 +61,8 @@ void stomp_messenger_destroy(stomp_messenger_t **messenger)
 
 stomp_status_code_t stomp_set_endpoint(stomp_messenger_t *messenger, const char *uri)
 {
-    //fprintf(stderr, "Parsing URI: %s", uri);
-    apr_status_t stat = apr_uri_parse(messenger->pool, *uri, &messenger->uri);
+    //fprintf(stderr, "Parsing URI: %s\n", uri);
+    apr_status_t stat = apr_uri_parse(messenger->pool, uri, &messenger->uri);
     //fprintf(stderr, "Done: %s:%d\n", messenger->uri.hostname, messenger->uri.port);
     
     if (stat != APR_SUCCESS) {
