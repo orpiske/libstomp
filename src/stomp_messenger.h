@@ -26,6 +26,7 @@
 #include "stomp_engine.h"
 #include "stomp_frame.h"
 #include "stomp_io.h"
+#include "stomp_headers.h"
 
 typedef apr_uri_t stomp_uri_t;
 
