@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
         goto failure;
     }
     
-    stat = stomp_set_endpoint(messenger, "stomp://localhost:61613/test.stomp.queue");
+    stat = stomp_set_endpoint(messenger, "stomp://localhost:61613/queue/test.stomp.queue");
     if (stat != STOMP_SUCCESS) {
         fprintf(stderr, messenger->status.message);
         
