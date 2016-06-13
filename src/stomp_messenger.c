@@ -71,6 +71,23 @@ stomp_status_code_t stomp_set_endpoint(stomp_messenger_t *messenger, const char 
 
         return STOMP_FAILURE;
     }
+    
+    if (!messenger->uri.path) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE,
+                "Invalid connection destination: null");
+
+        return STOMP_FAILURE;
+    }
+
+    if (strlen(messenger->uri.path) == 0) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE,
+                "Invalid connection destination: empty");
+
+        return STOMP_FAILURE;
+    }
+    
+    
+    return STOMP_SUCCESS;
 }
 
 stomp_status_code_t stomp_connect(stomp_messenger_t *messenger,
@@ -200,22 +217,8 @@ stomp_status_code_t stomp_subscribe(stomp_messenger_t *messenger,
     frame.command = "SUBSCRIBE";
     frame.headers = apr_hash_make(messenger->pool);
 
-    if (!header->destination) {
-        stomp_status_set(&messenger->status, STOMP_FAILURE,
-                "Invalid connection destination: null");
-
-        return STOMP_FAILURE;
-    }
-
-    if (strlen(header->destination) == 0) {
-        stomp_status_set(&messenger->status, STOMP_FAILURE,
-                "Invalid connection destination: empty");
-
-        return STOMP_FAILURE;
-    }
-
     apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING,
-            header->destination);
+            messenger->uri.path);
     apr_hash_set(frame.headers, "id", APR_HASH_KEY_STRING,
             apr_itoa(messenger->pool, header->id));
 
@@ -241,22 +244,8 @@ stomp_status_code_t stomp_unsubscribe(stomp_messenger_t *messenger,
     frame.command = "UNSUBSCRIBE";
     frame.headers = apr_hash_make(messenger->pool);
 
-    if (!header->destination) {
-        stomp_status_set(&messenger->status, STOMP_FAILURE,
-                "Invalid connection destination: null");
-
-        return STOMP_FAILURE;
-    }
-
-    if (strlen(header->destination) == 0) {
-        stomp_status_set(&messenger->status, STOMP_FAILURE,
-                "Invalid connection destination: empty");
-
-        return STOMP_FAILURE;
-    }
-
     apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING,
-            header->destination);
+            messenger->uri.path);
     apr_hash_set(frame.headers, "id", APR_HASH_KEY_STRING,
             header->id);
 

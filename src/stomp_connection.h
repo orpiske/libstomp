@@ -80,7 +80,6 @@ typedef enum stomp_subscription_ack_t_
 typedef struct stomp_subscription_header_t_
 {
     subscription_id_t id;
-    char *destination;
     stomp_subscription_ack_t ack;
 } stomp_subscription_header_t;
 
