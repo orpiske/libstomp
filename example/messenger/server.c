@@ -36,6 +36,7 @@ int main(int argc, char **argv) {
         
         goto failure;
     }
+   
     
     stat = stomp_connect(messenger, NULL);
     if (stat != STOMP_SUCCESS) {
@@ -43,21 +44,30 @@ int main(int argc, char **argv) {
         
         goto failure;
     }
-
-    stomp_message_t *message = malloc(sizeof(stomp_message_t));
-    message->body = "HIGH LEVEL API TEST";
-    message->size = strlen(message->body);
     
-    stomp_send_header_t send_header; 
     
-    send_header.transaction_id = -1;
+    stomp_subscription_header_t sub_header;
     
-    stat = stomp_send(messenger, &send_header, message);
+    sub_header.id = 1;
+    stat = stomp_subscribe(messenger, &sub_header);
     if (stat != STOMP_SUCCESS) {
         fprintf(stderr, messenger->status.message);
         
         goto failure;
     }
+
+    stomp_message_t *message = malloc(sizeof(stomp_message_t));
+    
+    
+    stomp_receive_header_t receive_header; 
+    
+    stat = stomp_receive(messenger, &receive_header, message);
+    if (stat != STOMP_SUCCESS) {
+        fprintf(stderr, messenger->status.message);
+        
+        goto failure;
+    }
+    fprintf(stdout, "%s\n", message->body);
 
     
     stat = stomp_disconnect(messenger, NULL);

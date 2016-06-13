@@ -19,6 +19,11 @@ add_executable(
 	messenger/client.c
 )
 
+add_executable(
+	messenger-server
+	messenger/server.c
+)
+
 target_link_libraries(
 	engine-server
 	stomp
@@ -31,6 +36,12 @@ target_link_libraries(
 
 target_link_libraries(
 	messenger-client
+	stomp
+)
+
+
+target_link_libraries(
+	messenger-server
 	stomp
 )
 
