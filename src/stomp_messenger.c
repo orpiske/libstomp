@@ -162,6 +162,29 @@ stomp_status_code_t stomp_connect(stomp_messenger_t *messenger,
     return STOMP_SUCCESS;
 }
 
+static stomp_status_code_t stomp_process_receipt(stomp_messenger_t *messenger) {
+    fprintf(stderr, "Waiting for receipt\n");
+    const char *DISCONN_REPLY_STR = "RECEIPT";
+
+    stomp_frame *reply_frame;
+    apr_status_t stat = stomp_read(messenger->connection, &reply_frame, messenger->pool);
+    if (stat != APR_SUCCESS) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE,
+                "Unable to read the frame data to the underlying connection: %s", 
+                reply_frame->command);
+
+        return STOMP_FAILURE;
+    }
+
+    if (strncmp(reply_frame->command, DISCONN_REPLY_STR, strlen(DISCONN_REPLY_STR)) != 0) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE,
+                "Invalid disconnection reply: %s", reply_frame->command);
+
+        return STOMP_FAILURE;
+    }
+
+}
+
 stomp_status_code_t stomp_disconnect(stomp_messenger_t *messenger, 
                                   stomp_disconnection_header_t *header) {
     stomp_frame frame;
@@ -169,7 +192,7 @@ stomp_status_code_t stomp_disconnect(stomp_messenger_t *messenger,
     frame.command = "DISCONNECT";
     frame.headers = apr_hash_make(messenger->pool);
 
-    if (header != NULL) { 
+    if (header != NULL && header->receipt > 0) { 
         apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING,
                 apr_itoa(messenger->pool, header->receipt));
     }
@@ -185,25 +208,8 @@ stomp_status_code_t stomp_disconnect(stomp_messenger_t *messenger,
         return STOMP_FAILURE;
     }
     
-    if (header != NULL) {
-        const char *DISCONN_REPLY_STR = "RECEIPT";
-
-        stomp_frame *reply_frame;
-        stat = stomp_read(messenger->connection, &reply_frame, messenger->pool);
-        if (stat != APR_SUCCESS) {
-            stomp_status_set(&messenger->status, STOMP_FAILURE,
-                    "Unable to read the frame data to the underlying connection: %s", 
-                    reply_frame->command);
-
-            return STOMP_FAILURE;
-        }
-
-        if (strncmp(reply_frame->command, DISCONN_REPLY_STR, strlen(DISCONN_REPLY_STR)) != 0) {
-            stomp_status_set(&messenger->status, STOMP_FAILURE,
-                    "Invalid disconnection reply: %s", reply_frame->command);
-
-            return STOMP_FAILURE;
-        }
+    if (header != NULL && header->receipt > 0) {
+        return stomp_process_receipt(messenger);
     }
 
     return STOMP_SUCCESS;
