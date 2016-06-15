@@ -27,6 +27,7 @@
 #include "stomp_frame.h"
 #include "stomp_io.h"
 #include "stomp_headers.h"
+#include "stomp_message.h"
 
 typedef apr_uri_t stomp_uri_t;
 
@@ -36,11 +37,6 @@ typedef struct stomp_messenger_t_ {
     apr_pool_t *pool;
     stomp_uri_t uri;
 } stomp_messenger_t;
-
-typedef struct stomp_message_t_ {
-    size_t size; 
-    char *body;
-} stomp_message_t;
 
 
 stomp_messenger_t *stomp_messenger_init();

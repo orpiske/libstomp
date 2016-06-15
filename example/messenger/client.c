@@ -15,6 +15,7 @@
  */
 #include "stomp_connection.h"
 #include "stomp_messenger.h"
+#include "stomp_message.h"
 #include "stomp_status.h"
 
 #include <stdio.h>
@@ -44,9 +45,16 @@ int main(int argc, char **argv) {
         goto failure;
     }
 
-    stomp_message_t *message = malloc(sizeof(stomp_message_t));
-    message->body = "HIGH LEVEL API TEST";
-    message->size = strlen(message->body) + 1;
+    stomp_message_t *message = stomp_message_create(&messenger->status);
+    
+    if (!message) {
+        fprintf(stderr, messenger->status.message);
+        
+        goto failure;
+    }
+    
+    char *text = "HIGH LEVEL API TEST";
+    stomp_message_format(message, text, strlen(text));
     
     stomp_send_header_t send_header; 
     
@@ -71,10 +79,12 @@ int main(int argc, char **argv) {
     }
     
     
+    stomp_message_destroy(&message);
     stomp_messenger_destroy(&messenger);
     return EXIT_SUCCESS;
     
     failure:
+    stomp_message_destroy(&message);
     stomp_messenger_destroy(&messenger);
     return EXIT_FAILURE;
 

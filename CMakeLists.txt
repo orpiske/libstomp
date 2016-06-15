@@ -33,7 +33,9 @@ add_library(
         src/stomp_io.c
         src/stomp_engine.c
         src/stomp_status.c
+        src/stomp_message.c
         src/stomp_messenger.c
+        
 )
 
 target_link_libraries(
