@@ -22,12 +22,19 @@
 extern "C" {
 #endif
 
+/**
+ * STOMP credentials header/settings
+ */
 typedef struct stomp_credentials_t_
 {
     char *username;
     char *password;
 } stomp_credentials_t;
 
+
+/**
+ * STOMP heartbeat header/settings
+ */
 typedef struct stomp_heartbeat_t_
 {
     uint16_t send;
@@ -35,12 +42,18 @@ typedef struct stomp_heartbeat_t_
 } stomp_heartbeat_t;
 
 
+/**
+ * STOMP common headers used by all frames
+ */
 typedef struct stomp_common_header_t_ {
     size_t content_lenght;
     char *content_type; 
 } stomp_common_header_t;
 
 
+/**
+ * STOMP connection headers
+ */
 typedef struct stomp_connection_header_t_
 {
     stomp_common_header_t common;
@@ -48,12 +61,20 @@ typedef struct stomp_connection_header_t_
     stomp_heartbeat_t heartbeat;
 } stomp_connection_header_t;
 
+
+/**
+ * STOMP disconnection headers
+ */
 typedef struct stomp_disconnection_header_t_
 {
     stomp_common_header_t common;
     receipt_t receipt;
 } stomp_disconnection_header_t;
 
+
+/**
+ * STOMP acknowledge mode
+ */
 typedef enum stomp_subscription_ack_t_
 {
     AUTO,
@@ -61,6 +82,10 @@ typedef enum stomp_subscription_ack_t_
     CLIENT_INDIVIDUAL,
 } stomp_subscription_ack_t;
 
+
+/**
+ * STOMP subscription header
+ */
 typedef struct stomp_subscription_header_t_
 {
     stomp_common_header_t common;
@@ -69,6 +94,10 @@ typedef struct stomp_subscription_header_t_
     stomp_subscription_ack_t ack;
 } stomp_subscription_header_t;
 
+
+/**
+ * STOMP ACK and NACK header
+ */
 typedef struct stomp_ack_header_t_
 {
     stomp_common_header_t common;
@@ -77,6 +106,10 @@ typedef struct stomp_ack_header_t_
     transaction_id_t transaction_id;
 } stomp_ack_header_t;
 
+
+/**
+ * STOMP transaction header
+ */
 typedef struct stomp_transaction_header_t_
 {
     stomp_common_header_t common;
@@ -84,6 +117,10 @@ typedef struct stomp_transaction_header_t_
     receipt_t receipt;
 } stomp_transaction_header_t;
 
+
+/**
+ * STOMP send header
+ */
 typedef struct stomp_send_header_t_
 {
     stomp_common_header_t common;
@@ -93,6 +130,10 @@ typedef struct stomp_send_header_t_
 } stomp_send_header_t;
 
 
+
+/**
+ * STOMP receive header
+ */
 typedef struct stomp_receive_header_t_
 {
     

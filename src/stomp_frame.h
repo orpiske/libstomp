@@ -28,6 +28,9 @@
 extern "C" {
 #endif
 
+/**
+ * STOMP frame reference object
+ */
 typedef struct stomp_frame
 {
     char *command;

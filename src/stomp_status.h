@@ -24,18 +24,43 @@ extern "C" {
 #include <stdint.h>
 #include <stdarg.h>
 
+/*
+ * Valid status codes
+ */
 typedef enum stomp_status_code_t_ {
     STOMP_SUCCESS,
     STOMP_FAILURE,
 } stomp_status_code_t;
 
+/**
+ * Status type
+ */
 typedef struct stomp_status_t_ {
     stomp_status_code_t code;
     char *message;
 } stomp_status_t;
 
-void stomp_status_set(stomp_status_t *status, stomp_status_code_t code, const char *message, ...);
+
+/**
+ * Sets the status
+ * @param status an instance of the status object to set
+ * @param code the code to set the object to
+ * @param message the status message followed by any other parameter as accepted 
+ * by vasprintf
+ */
+void stomp_status_set(stomp_status_t *status, stomp_status_code_t code, 
+                      const char *message, ...);
+
+/**
+ * Resets the status
+ * @param status an instance of the status object to set
+ */
 void stomp_status_reset(stomp_status_t *status);
+
+/**
+ * Sets the status to success
+ * @param status an instance of the status object to set
+ */
 void stomp_status_success(stomp_status_t *status);
 
 #ifdef __cplusplus

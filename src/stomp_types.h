@@ -21,9 +21,24 @@
 extern "C" {
 #endif
 
+/**
+ * Message ID
+ */
 typedef int64_t message_id_t;
+
+/**
+ * Transaction ID
+ */
 typedef int64_t transaction_id_t;
+
+/**
+ * Subscription ID
+ */
 typedef uint16_t subscription_id_t;
+
+/**
+ * Receipt
+ */
 typedef uint32_t receipt_t;
 
 #ifdef __cplusplus

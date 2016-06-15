@@ -23,14 +23,43 @@
 extern "C" {
 #endif
 
+/**
+ * STOMP message
+ */
 typedef struct stomp_message_t_ {
+    /**
+     * Message size
+     */
     size_t size; 
+    
+    /**
+     * Message body
+     */
     char *body;
 } stomp_message_t;
 
+
+/**
+ * Creates a new STOMP message object
+ * @param status A pointer to a status structure that will contain error details
+ * in case the message creation fails
+ * @return a new STOMP message object
+ */
 stomp_message_t *stomp_message_create(stomp_status_t *status);
+
+/**
+ * Destroy a STOMP message object. The object will be unusable after destruction
+ * @param message A pointer to a pointer of a message object
+ */
 void stomp_message_destroy(stomp_message_t **message);
 
+
+/**
+ * Writes data to the message object
+ * @param message the message object instance to write to
+ * @param data the data to write
+ * @param len the lenght of the data
+ */
 void stomp_message_format(stomp_message_t *message, const char *data, size_t len);
 
 #ifdef __cplusplus

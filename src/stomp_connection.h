@@ -34,6 +34,9 @@ extern "C"
 {
 #endif
 
+/**
+ * Stomp connection reference object
+ */
 typedef struct stomp_connection
 {
     apr_socket_t *socket;

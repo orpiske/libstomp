@@ -20,7 +20,7 @@
  * 
  * This file, itself, was renamed from stomp.c to stomp_engine.h. Additionally
  * the contents of this file were modified in order to match the project 
- * formatting guidelines.
+ * formatting guidelines and add documentation. 
  */
 #ifndef STOMP_ENGINE_H
 #define STOMP_ENGINE_H
@@ -44,7 +44,27 @@ extern "C"
 #endif /* __cplusplus */
 
 
-APR_DECLARE(apr_status_t) stomp_engine_connect(stomp_connection **connection_ref, const char *hostname, int port, apr_pool_t *pool);
+/**
+ * Connects to the broker using the low level connection engine
+ * @param connection_ref
+ * @param hostname
+ * @param port
+ * @param pool
+ * @return 
+ */
+APR_DECLARE(apr_status_t) stomp_engine_connect(stomp_connection **connection_ref, 
+                                               const char *hostname, 
+                                               int port, apr_pool_t *pool);
+
+
+/**
+ * Disconnects from the broker using the low level connection engine
+ * @param connection_ref
+ * @param hostname
+ * @param port
+ * @param pool
+ * @return 
+ */
 APR_DECLARE(apr_status_t) stomp_engine_disconnect(stomp_connection **connection_ref);
 
 

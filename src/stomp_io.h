@@ -37,7 +37,22 @@ typedef struct data_block_list {
     struct data_block_list *next;
 } data_block_list;
 
+/**
+ * Low level write to the STOMP connection
+ * @param connection
+ * @param frame
+ * @param pool
+ * @return 
+ */
 APR_DECLARE(apr_status_t) stomp_write(stomp_connection *connection, stomp_frame *frame, apr_pool_t *pool);
+
+/**
+ * Low level read from the STOMP connection
+ * @param connection
+ * @param frame
+ * @param pool
+ * @return 
+ */
 APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection, stomp_frame **frame, apr_pool_t *pool);
 
 
