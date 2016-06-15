@@ -46,11 +46,12 @@ int main(int argc, char **argv) {
 
     stomp_message_t *message = malloc(sizeof(stomp_message_t));
     message->body = "HIGH LEVEL API TEST";
-    message->size = strlen(message->body);
+    message->size = strlen(message->body) + 1;
     
     stomp_send_header_t send_header; 
     
     send_header.transaction_id = -1;
+    send_header.receipt = 124;
     
     stat = stomp_send(messenger, &send_header, message);
     if (stat != STOMP_SUCCESS) {
@@ -59,8 +60,10 @@ int main(int argc, char **argv) {
         goto failure;
     }
 
+    stomp_disconnection_header_t disconn; 
     
-    stat = stomp_disconnect(messenger, NULL);
+    disconn.receipt = 124;
+    stat = stomp_disconnect(messenger, &disconn);
     if (stat != STOMP_SUCCESS) {
         fprintf(stderr, messenger->status.message);
         

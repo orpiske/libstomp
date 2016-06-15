@@ -58,6 +58,7 @@ typedef struct stomp_subscription_header_t_
 {
     subscription_id_t id;
     stomp_subscription_ack_t ack;
+    receipt_t receipt;
 } stomp_subscription_header_t;
 
 typedef int64_t message_id_t;
@@ -67,11 +68,13 @@ typedef struct stomp_ack_header_t_
 {
     message_id_t message_id;
     transaction_id_t transaction_id;
+    receipt_t receipt;
 } stomp_ack_header_t;
 
 typedef struct stomp_transaction_header_t_
 {
     transaction_id_t transaction_id;
+    receipt_t receipt;
 } stomp_transaction_header_t;
 
 typedef struct stomp_send_header_t_
@@ -79,6 +82,7 @@ typedef struct stomp_send_header_t_
     char *destination;
     char *content_type;
     transaction_id_t transaction_id;
+    receipt_t receipt;
 } stomp_send_header_t;
 
 
@@ -97,6 +101,20 @@ typedef enum stomp_frame_t_
 typedef struct stomp_header_t_
 {
     stomp_frame frame; 
+    
+    union {
+        union {
+            stomp_connection_header_t *connection_header;
+            stomp_subscription_header_t *subscription_header;
+            stomp_ack_header_t *ack_header;
+        } client;
+        union {
+            stomp_receive_header_t *message;
+        } server;
+    } family;
+    
+    
+    
     union {
         stomp_connection_header_t *connection_header;
         stomp_subscription_header_t *subscription_header;

@@ -182,7 +182,14 @@ static stomp_status_code_t stomp_process_receipt(stomp_messenger_t *messenger) {
 
         return STOMP_FAILURE;
     }
+}
 
+static inline void stomp_write_receipt(stomp_messenger_t *messenger, 
+        stomp_frame *frame, receipt_t receipt) {
+     if (receipt > 0) { 
+        apr_hash_set(frame->headers, "receipt", APR_HASH_KEY_STRING,
+                apr_itoa(messenger->pool, receipt));
+    }
 }
 
 stomp_status_code_t stomp_disconnect(stomp_messenger_t *messenger, 
@@ -192,9 +199,8 @@ stomp_status_code_t stomp_disconnect(stomp_messenger_t *messenger,
     frame.command = "DISCONNECT";
     frame.headers = apr_hash_make(messenger->pool);
 
-    if (header != NULL && header->receipt > 0) { 
-        apr_hash_set(frame.headers, "receipt", APR_HASH_KEY_STRING,
-                apr_itoa(messenger->pool, header->receipt));
+    if (header != NULL) {
+        stomp_write_receipt(messenger, &frame, header->receipt);
     }
   
     frame.body_length = -1;
@@ -228,15 +234,23 @@ stomp_status_code_t stomp_subscribe(stomp_messenger_t *messenger,
     apr_hash_set(frame.headers, "id", APR_HASH_KEY_STRING,
             apr_itoa(messenger->pool, header->id));
 
+    if (header != NULL) {
+        stomp_write_receipt(messenger, &frame, header->receipt);
+    }
+    
     frame.body_length = -1;
     frame.body = NULL;
-
+    
     apr_status_t stat = stomp_write(messenger->connection, &frame, messenger->pool);
     if (stat != APR_SUCCESS) {
         stomp_status_set(&messenger->status, STOMP_FAILURE,
                 "Unable to write the frame data to the underlying connection");
 
         return STOMP_FAILURE;
+    }
+    
+    if (header != NULL && header->receipt > 0) {
+        return stomp_process_receipt(messenger);
     }
 
     return STOMP_SUCCESS;
@@ -255,17 +269,26 @@ stomp_status_code_t stomp_unsubscribe(stomp_messenger_t *messenger,
     apr_hash_set(frame.headers, "id", APR_HASH_KEY_STRING,
             header->id);
 
+    if (header != NULL) {
+        stomp_write_receipt(messenger, &frame, header->receipt);
+    }
+    
     // TODO: handle the ACK
 
     frame.body_length = -1;
     frame.body = NULL;
-
+    
+     
     apr_status_t stat = stomp_write(messenger->connection, &frame, messenger->pool);
     if (stat != APR_SUCCESS) {
         stomp_status_set(&messenger->status, STOMP_FAILURE,
                 "Unable to write the frame data to the underlying connection");
 
         return STOMP_FAILURE;
+    }
+    
+    if (header != NULL && header->receipt > 0) {
+        return stomp_process_receipt(messenger);
     }
 
     return STOMP_SUCCESS;
@@ -286,6 +309,10 @@ stomp_status_code_t stomp_ack(stomp_messenger_t *messenger,
         apr_hash_set(frame.headers, "transaction", APR_HASH_KEY_STRING,
                 header->transaction_id);
     }
+    
+    if (header != NULL) {
+        stomp_write_receipt(messenger, &frame, header->receipt);
+    }
 
     frame.body_length = -1;
     frame.body = NULL;
@@ -296,6 +323,10 @@ stomp_status_code_t stomp_ack(stomp_messenger_t *messenger,
                 "Unable to write the frame data to the underlying connection");
 
         return STOMP_FAILURE;
+    }
+    
+    if (header != NULL && header->receipt > 0) {
+        return stomp_process_receipt(messenger);
     }
 
     return STOMP_SUCCESS;
@@ -316,6 +347,10 @@ stomp_status_code_t stomp_nack(stomp_messenger_t *messenger,
         apr_hash_set(frame.headers, "transaction", APR_HASH_KEY_STRING,
                 header->transaction_id);
     }
+    
+    if (header != NULL) {
+        stomp_write_receipt(messenger, &frame, header->receipt);
+    }
 
     frame.body_length = -1;
     frame.body = NULL;
@@ -326,6 +361,10 @@ stomp_status_code_t stomp_nack(stomp_messenger_t *messenger,
                 "Unable to write the frame data to the underlying connection");
 
         return STOMP_FAILURE;
+    }
+    
+    if (header != NULL && header->receipt > 0) {
+        return stomp_process_receipt(messenger);
     }
 
     return STOMP_SUCCESS;
@@ -343,7 +382,10 @@ static stomp_status_code_t stomp_transaction(stomp_messenger_t *messenger,
     apr_hash_set(frame.headers, "transaction", APR_HASH_KEY_STRING,
             header->transaction_id);
 
-
+    if (header != NULL) {
+        stomp_write_receipt(messenger, &frame, header->receipt);
+    }
+    
     frame.body_length = -1;
     frame.body = NULL;
 
@@ -353,6 +395,10 @@ static stomp_status_code_t stomp_transaction(stomp_messenger_t *messenger,
                 "Unable to write the frame data to the underlying connection");
 
         return STOMP_FAILURE;
+    }
+    
+    if (header != NULL && header->receipt > 0) {
+        return stomp_process_receipt(messenger);
     }
 
     return STOMP_SUCCESS;
@@ -397,6 +443,10 @@ stomp_status_code_t stomp_send(stomp_messenger_t *messenger,
                 header->transaction_id);
     }
     
+    if (header != NULL) {
+        stomp_write_receipt(messenger, &frame, header->receipt);
+    }
+    
     apr_status_t stat = stomp_write(messenger->connection, &frame, messenger->pool);
     if (stat != APR_SUCCESS) {
         stomp_status_set(&messenger->status, STOMP_FAILURE,
@@ -404,6 +454,11 @@ stomp_status_code_t stomp_send(stomp_messenger_t *messenger,
 
         return STOMP_FAILURE;
     }
+    
+    if (header != NULL && header->receipt > 0) {
+        return stomp_process_receipt(messenger);
+    }
+
 
     return STOMP_SUCCESS;
 }

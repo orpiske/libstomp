@@ -49,6 +49,7 @@ int main(int argc, char **argv) {
     stomp_subscription_header_t sub_header;
     
     sub_header.id = 1;
+    sub_header.receipt = 123;
     stat = stomp_subscribe(messenger, &sub_header);
     if (stat != STOMP_SUCCESS) {
         fprintf(stderr, messenger->status.message);
