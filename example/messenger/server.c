@@ -15,6 +15,7 @@
  */
 #include "stomp_connection.h"
 #include "stomp_messenger.h"
+#include "stomp_message.h"
 #include "stomp_status.h"
 
 #include <stdio.h>
@@ -57,8 +58,7 @@ int main(int argc, char **argv) {
         goto failure;
     }
 
-    stomp_message_t *message = malloc(sizeof(stomp_message_t));
-    
+    stomp_message_t *message = stomp_message_create(NULL);
     
     stomp_receive_header_t receive_header; 
     

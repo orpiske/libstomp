@@ -480,19 +480,13 @@ stomp_status_code_t stomp_receive(stomp_messenger_t *messenger,
     
     apr_status_t stat = stomp_read(messenger->connection, &frame, messenger->pool);
     if (stat == APR_SUCCESS) {
+        stomp_message_format(message, frame->body, frame->body_length);
+        
         if (strncmp(frame->command, "MESSAGE", strlen("MESSAGE")) == 0) {
-            strncpy(message->body, frame->body, frame->body_length);
-            message->size = frame->body_length;
-            
             return STOMP_SUCCESS;
         }
-        else {
-            // TODO: handle error condition
-            strncpy(message->body, frame->body, frame->body_length);
-            message->size = frame->body_length;
-            
-            return STOMP_FAILURE;
-        }
+        
+        return STOMP_FAILURE;
     }
     else {
         stomp_status_set(&messenger->status, STOMP_FAILURE,
