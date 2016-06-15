@@ -1,27 +1,10 @@
 Welcome to libstomp
 ===================
 
-libstomp is a c library used to talk the Stomp which is a simple to implement client protocol for 
-working with ActiveMQ and other messaging systems.
+This is a fork of the old libstomp library, modified for simplicity and 
+reusability. This library implements a simple STOMP, a text oriented messaging
+protocol that can be used to talk to message brokers such as Apace ActiveMQ.
 
-Getting Started
-http://docs.codehaus.org/display/STOMP/Getting+Started+with+libstomp
+This library supports the version [1.2 of the STOMP protocol](https://stomp.github.io/stomp-specification-1.2.html).
 
-Building
-http://docs.codehaus.org/display/STOMP/Building+libstomp
-
-Example
-http://docs.codehaus.org/display/STOMP/libstomp+Examples
-
-We welcome contributions of all kinds, for details of how you can help
-*Page doesn't exist. Needs update*
-
-Please refer to the website for details of finding the issue tracker, email lists, wiki or IRC channel
-http://docs.codehaus.org/display/STOMP/C
-
-Please help us make libstomp better - we appreciate any feedback you may have.
-
-Enjoy!
-
------------------
-The Stomp team
+Please feel free to contribute to make this library better.
