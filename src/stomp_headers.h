@@ -32,8 +32,16 @@ typedef struct stomp_heartbeat_t_
     uint16_t receive;
 } stomp_heartbeat_t;
 
+
+typedef struct stomp_common_header_t_ {
+    size_t content_lenght;
+    char *content_type; 
+} stomp_common_header_t;
+
+
 typedef struct stomp_connection_header_t_
 {
+    stomp_common_header_t common;
     stomp_credentials_t *credentials;
     stomp_heartbeat_t heartbeat;
 } stomp_connection_header_t;
@@ -42,6 +50,7 @@ typedef uint32_t receipt_t;
 
 typedef struct stomp_disconnection_header_t_
 {
+    stomp_common_header_t common;
     receipt_t receipt;
 } stomp_disconnection_header_t;
 
@@ -56,9 +65,10 @@ typedef enum stomp_subscription_ack_t_
 
 typedef struct stomp_subscription_header_t_
 {
+    stomp_common_header_t common;
+    receipt_t receipt;
     subscription_id_t id;
     stomp_subscription_ack_t ack;
-    receipt_t receipt;
 } stomp_subscription_header_t;
 
 typedef int64_t message_id_t;
@@ -66,21 +76,23 @@ typedef int64_t transaction_id_t;
 
 typedef struct stomp_ack_header_t_
 {
+    stomp_common_header_t common;
+    receipt_t receipt;
     message_id_t message_id;
     transaction_id_t transaction_id;
-    receipt_t receipt;
 } stomp_ack_header_t;
 
 typedef struct stomp_transaction_header_t_
 {
+    stomp_common_header_t common;
     transaction_id_t transaction_id;
     receipt_t receipt;
 } stomp_transaction_header_t;
 
 typedef struct stomp_send_header_t_
 {
+    stomp_common_header_t common;
     char *destination;
-    char *content_type;
     transaction_id_t transaction_id;
     receipt_t receipt;
 } stomp_send_header_t;
@@ -90,39 +102,6 @@ typedef struct stomp_receive_header_t_
 {
     
 } stomp_receive_header_t;
-
-#ifdef __STOMP_DISABLED__
-typedef enum stomp_frame_t_
-{
-    CONNECT, CONNECTED, SEND, SUBSCRIBE, UNSUBSCRIBE, ACK, NACK, BEGIN, COMMIT,
-    ABORT, DISCONNECT, MESSAGE, RECEIPT, ERROR, STOMP = CONNECT,
-} stomp_frame;
-
-typedef struct stomp_header_t_
-{
-    stomp_frame frame; 
-    
-    union {
-        union {
-            stomp_connection_header_t *connection_header;
-            stomp_subscription_header_t *subscription_header;
-            stomp_ack_header_t *ack_header;
-        } client;
-        union {
-            stomp_receive_header_t *message;
-        } server;
-    } family;
-    
-    
-    
-    union {
-        stomp_connection_header_t *connection_header;
-        stomp_subscription_header_t *subscription_header;
-        stomp_ack_header_t *ack_header;
-    } header;
-} stomp_header_t;
-
-#endif
 
 
 #ifdef __cplusplus

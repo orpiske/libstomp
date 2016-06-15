@@ -267,7 +267,7 @@ stomp_status_code_t stomp_unsubscribe(stomp_messenger_t *messenger,
     apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING,
             messenger->uri.path);
     apr_hash_set(frame.headers, "id", APR_HASH_KEY_STRING,
-            header->id);
+            apr_itoa(messenger->pool, header->id));
 
     if (header != NULL) {
         stomp_write_receipt(messenger, &frame, header->receipt);
@@ -294,6 +294,25 @@ stomp_status_code_t stomp_unsubscribe(stomp_messenger_t *messenger,
     return STOMP_SUCCESS;
 }
 
+static inline void stomp_write_message_id(stomp_messenger_t *messenger, 
+        stomp_frame *frame, 
+        message_id_t message_id) 
+{
+    if (message_id > -1) {
+        apr_hash_set(frame->headers, "id", APR_HASH_KEY_STRING,
+                apr_itoa(messenger->pool, message_id));
+    }
+}
+static inline void stomp_write_transaction_id(stomp_messenger_t *messenger, 
+        stomp_frame *frame, 
+        transaction_id_t transaction_id) 
+{
+    if (transaction_id > -1) {
+        apr_hash_set(frame->headers, "transaction", APR_HASH_KEY_STRING,
+                apr_itoa(messenger->pool, transaction_id));
+    }
+}
+
 stomp_status_code_t stomp_ack(stomp_messenger_t *messenger,
         stomp_ack_header_t *header)
 {
@@ -302,18 +321,12 @@ stomp_status_code_t stomp_ack(stomp_messenger_t *messenger,
     frame.command = "ACK";
     frame.headers = apr_hash_make(messenger->pool);
 
-    apr_hash_set(frame.headers, "id", APR_HASH_KEY_STRING,
-            header->message_id);
-
-    if (header->transaction_id > -1) {
-        apr_hash_set(frame.headers, "transaction", APR_HASH_KEY_STRING,
-                header->transaction_id);
-    }
-    
     if (header != NULL) {
+        stomp_write_message_id(messenger, &frame, header->message_id);
+        stomp_write_transaction_id(messenger, &frame, header->transaction_id);
         stomp_write_receipt(messenger, &frame, header->receipt);
     }
-
+    
     frame.body_length = -1;
     frame.body = NULL;
 
@@ -339,16 +352,10 @@ stomp_status_code_t stomp_nack(stomp_messenger_t *messenger,
 
     frame.command = "NACK";
     frame.headers = apr_hash_make(messenger->pool);
-
-    apr_hash_set(frame.headers, "id", APR_HASH_KEY_STRING,
-            header->message_id);
-
-    if (header->transaction_id > -1) {
-        apr_hash_set(frame.headers, "transaction", APR_HASH_KEY_STRING,
-                header->transaction_id);
-    }
     
     if (header != NULL) {
+        stomp_write_message_id(messenger, &frame, header->message_id);
+        stomp_write_transaction_id(messenger, &frame, header->transaction_id);
         stomp_write_receipt(messenger, &frame, header->receipt);
     }
 
@@ -372,17 +379,15 @@ stomp_status_code_t stomp_nack(stomp_messenger_t *messenger,
 
 static stomp_status_code_t stomp_transaction(stomp_messenger_t *messenger,
         stomp_transaction_header_t *header,
-        const char *command)
+        char *command)
 {
     stomp_frame frame;
 
     frame.command = command;
     frame.headers = apr_hash_make(messenger->pool);
 
-    apr_hash_set(frame.headers, "transaction", APR_HASH_KEY_STRING,
-            header->transaction_id);
-
     if (header != NULL) {
+        stomp_write_transaction_id(messenger, &frame, header->transaction_id);
         stomp_write_receipt(messenger, &frame, header->receipt);
     }
     
@@ -438,12 +443,8 @@ stomp_status_code_t stomp_send(stomp_messenger_t *messenger,
     frame.body_length = message->size;
     frame.body = message->body;
     
-    if (header->transaction_id > -1) {
-        apr_hash_set(frame.headers, "transaction", APR_HASH_KEY_STRING,
-                header->transaction_id);
-    }
-    
     if (header != NULL) {
+        stomp_write_transaction_id(messenger, &frame, header->transaction_id);
         stomp_write_receipt(messenger, &frame, header->receipt);
     }
     
