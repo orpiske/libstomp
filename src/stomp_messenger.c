@@ -54,9 +54,15 @@ stomp_messenger_t *stomp_messenger_init()
 
 void stomp_messenger_destroy(stomp_messenger_t **messenger)
 {
+    if ((*messenger) != NULL) { 
+        apr_pool_destroy((*messenger)->pool);
+    }
+    
     // TODO: disconnect, maybe?
     free(*messenger);
     *messenger = NULL;
+    
+    apr_terminate();
 }
 
 stomp_status_code_t stomp_set_endpoint(stomp_messenger_t *messenger, const char *uri)

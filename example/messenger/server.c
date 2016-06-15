@@ -79,10 +79,12 @@ int main(int argc, char **argv) {
     }
     
     
+    stomp_message_destroy(&message);
     stomp_messenger_destroy(&messenger);
     return EXIT_SUCCESS;
     
     failure:
+    stomp_message_destroy(&message);
     stomp_messenger_destroy(&messenger);
     return EXIT_FAILURE;
 
