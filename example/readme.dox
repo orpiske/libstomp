@@ -1,0 +1,26 @@
+/** @example messenger/client.c
+
+A simple client that connects to local host and exchange 1 message with the server
+
+*/
+
+/** @example messenger/server.c
+
+A simple server that connects to local host and exchange 1 message with the server
+
+*/
+
+
+/** @example engine/client.c
+
+A modification of the original example, using the lower level connection engine 
+for message exchange
+
+*/
+
+/** @example engine/server.c
+
+A modification of the original example, using the lower level connection engine 
+for message exchange
+
+*/

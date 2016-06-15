@@ -32,6 +32,9 @@
 extern "C" {
 #endif
     
+/**
+ * @internal
+ */
 typedef struct data_block_list {
     char data[1024];
     struct data_block_list *next;

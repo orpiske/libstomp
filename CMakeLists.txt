@@ -29,7 +29,9 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 		"Flags used by the compiler during all build types." FORCE
 	)
 endif (CMAKE_COMPILER_IS_GNUCXX)
- 
+
+add_custom_target(documentation
+    COMMAND ${CMAKE_COMMAND} -P ../documentation.cmake)
 
 include_directories(src)
 

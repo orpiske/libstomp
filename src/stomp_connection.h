@@ -36,6 +36,7 @@ extern "C"
 
 /**
  * Stomp connection reference object
+ * @internal
  */
 typedef struct stomp_connection
 {

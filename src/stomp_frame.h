@@ -30,6 +30,7 @@ extern "C" {
 
 /**
  * STOMP frame reference object
+ * \internal
  */
 typedef struct stomp_frame
 {
