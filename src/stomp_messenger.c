@@ -228,15 +228,23 @@ stomp_status_code_t stomp_subscribe(stomp_messenger_t *messenger,
 
     frame.command = "SUBSCRIBE";
     frame.headers = apr_hash_make(messenger->pool);
-
+    
     apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING,
             messenger->uri.path);
+    
+    if (header == NULL) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE,
+                "A STOMP subscription requires a subscription ID");
+
+        return STOMP_FAILURE;
+    }
+
+    
     apr_hash_set(frame.headers, "id", APR_HASH_KEY_STRING,
             apr_itoa(messenger->pool, header->id));
 
-    if (header != NULL) {
-        stomp_write_receipt(messenger, &frame, header->receipt);
-    }
+    stomp_write_receipt(messenger, &frame, header->receipt);
+    
     
     frame.body_length = -1;
     frame.body = NULL;

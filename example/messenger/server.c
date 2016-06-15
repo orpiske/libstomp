@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
     sub_header.receipt = 123;
     stat = stomp_subscribe(messenger, &sub_header);
     if (stat != STOMP_SUCCESS) {
-        fprintf(stderr, messenger->status.message);
+        fprintf(stderr, "%s\n", messenger->status.message);
         
         goto failure;
     }
