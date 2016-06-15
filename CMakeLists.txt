@@ -5,8 +5,19 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/target/bin)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/target/lib)
 
 set(RUNTIME_DIR "bin")
-set(CPP_LIBRARY_DIR "lib")
 set(CPP_INCLUDE_DIR "include")
+
+if( CMAKE_SIZEOF_VOID_P EQUAL 8)
+    message(STATUS "64 bits compiler detected")
+    set(APP_BUILD_PLATFORM 64)
+    set(APP_BUILD_PLATFORM_NAME "x86_64")
+    set(CPP_LIBRARY_DIR "lib64")
+else(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    message(STATUS "32 bits compiler detected")
+    set(APP_BUILD_PLATFORM 32)
+    set(APP_BUILD_PLATFORM_NAME "i686")
+    set(CPP_LIBRARY_DIR "lib")
+endif(CMAKE_SIZEOF_VOID_P EQUAL 8)
 
 
 if (${CMAKE_SYSTEM_NAME} EQUAL "Linux") 
@@ -42,5 +53,16 @@ target_link_libraries(
     apr-1
     aprutil-1
 )
+
+install(TARGETS
+        stomp
+	LIBRARY DESTINATION ${CPP_LIBRARY_DIR}
+)
+
+install(DIRECTORY src/ 
+        DESTINATION include/${PROJECT_NAME}
+        FILES_MATCHING PATTERN "*.h")
+
+
 
 add_subdirectory(example)
