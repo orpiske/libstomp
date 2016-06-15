@@ -16,6 +16,8 @@
 #ifndef STOMP_HEADERS_H
 #define STOMP_HEADERS_H
 
+#include "stomp_types.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -46,15 +48,11 @@ typedef struct stomp_connection_header_t_
     stomp_heartbeat_t heartbeat;
 } stomp_connection_header_t;
 
-typedef uint32_t receipt_t;
-
 typedef struct stomp_disconnection_header_t_
 {
     stomp_common_header_t common;
     receipt_t receipt;
 } stomp_disconnection_header_t;
-
-typedef uint16_t subscription_id_t;
 
 typedef enum stomp_subscription_ack_t_
 {
@@ -70,9 +68,6 @@ typedef struct stomp_subscription_header_t_
     subscription_id_t id;
     stomp_subscription_ack_t ack;
 } stomp_subscription_header_t;
-
-typedef int64_t message_id_t;
-typedef int64_t transaction_id_t;
 
 typedef struct stomp_ack_header_t_
 {
