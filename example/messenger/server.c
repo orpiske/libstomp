@@ -23,6 +23,10 @@
 
 int main(int argc, char **argv) {
     stomp_status_code_t stat;
+    
+    /*
+     * Initializes the messenger
+     */
     stomp_messenger_t *messenger = stomp_messenger_init(); 
     
     if (!messenger) {
@@ -31,14 +35,21 @@ int main(int argc, char **argv) {
         goto failure;
     }
     
+    
+    /*
+     * Sets the endpoint address
+     */
     stat = stomp_set_endpoint(messenger, "stomp://localhost:61613/queue/test.stomp.queue");
     if (stat != STOMP_SUCCESS) {
         fprintf(stderr, messenger->status.message);
         
         goto failure;
     }
-   
+       
     
+    /*
+     * Connects to the endpoint
+     */
     stat = stomp_connect(messenger, NULL);
     if (stat != STOMP_SUCCESS) {
         fprintf(stderr, messenger->status.message);
@@ -47,6 +58,10 @@ int main(int argc, char **argv) {
     }
     
     
+    /*
+     * Subscribes to the endpoint. Uses a fake ID and receipt just for the sake
+     * of the example
+     */
     stomp_subscription_header_t sub_header;
     
     sub_header.id = 1;
@@ -58,8 +73,15 @@ int main(int argc, char **argv) {
         goto failure;
     }
 
+    
+    /*
+     * Creates a message to be sent
+     */
     stomp_message_t *message = stomp_message_create(NULL);
     
+    /**
+     * And a receive header
+     */
     stomp_receive_header_t receive_header; 
     
     stat = stomp_receive(messenger, &receive_header, message);
@@ -70,7 +92,10 @@ int main(int argc, char **argv) {
     }
     fprintf(stdout, "%s\n", message->body);
 
-    
+
+    /*
+     * Disconnects from the broker disregarding any request for confirmation
+     */    
     stat = stomp_disconnect(messenger, NULL);
     if (stat != STOMP_SUCCESS) {
         fprintf(stderr, messenger->status.message);
@@ -79,6 +104,9 @@ int main(int argc, char **argv) {
     }
     
     
+    /*
+     * Cleanup the objects
+     */
     stomp_message_destroy(&message);
     stomp_messenger_destroy(&messenger);
     return EXIT_SUCCESS;
