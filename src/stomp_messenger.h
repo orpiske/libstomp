@@ -84,5 +84,9 @@ stomp_status_code_t stomp_message(stomp_messenger_t *messenger,
                                   stomp_receive_header_t *header,
                                   stomp_message_t *message);
 
+stomp_status_code_t stomp_receive(stomp_messenger_t *messenger, 
+                                  stomp_receive_header_t *header,
+                                  stomp_message_t *message);
+
 #endif /* STOMP_H_ */
 
