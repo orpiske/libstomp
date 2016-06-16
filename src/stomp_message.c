@@ -31,8 +31,6 @@ void stomp_message_destroy(stomp_message_t **message) {
 
 
 void stomp_message_format(stomp_message_t *message, const char *data, size_t len) {
-    message->body; 
-    
     if (message->body) {
         free(message->body);
     }
