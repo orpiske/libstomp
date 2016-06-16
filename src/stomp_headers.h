@@ -21,7 +21,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+    
 /**
  * STOMP credentials header/settings
  */
@@ -136,7 +136,7 @@ typedef struct stomp_send_header_t_
  */
 typedef struct stomp_receive_header_t_
 {
-    
+    stomp_common_header_t common;
 } stomp_receive_header_t;
 
 
