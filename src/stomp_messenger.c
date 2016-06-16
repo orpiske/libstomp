@@ -495,6 +495,8 @@ stomp_status_code_t stomp_receive(stomp_messenger_t *messenger,
     apr_status_t stat = stomp_read(messenger->connection, &frame, messenger->pool);
     if (stat == APR_SUCCESS) {
         stomp_message_format(message, frame->body, frame->body_length);
+        messenger->exchange_properties = apr_hash_overlay(messenger->pool, 
+                frame->headers, messenger->exchange_properties);
         
         if (strncmp(frame->command, "MESSAGE", strlen("MESSAGE")) == 0) {
             return STOMP_SUCCESS;
