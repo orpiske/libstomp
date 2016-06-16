@@ -15,6 +15,7 @@
  */
 #include "stomp_connection.h"
 #include "stomp_messenger.h"
+#include "stomp_ex_properties.h"
 #include "stomp_message.h"
 #include "stomp_status.h"
 
@@ -79,6 +80,8 @@ int main(int argc, char **argv) {
     send_header.transaction_id = -1;
     send_header.receipt = 124;
     
+    
+    stomp_exchange_add(messenger->exchange_properties, "test", "123");
     
     /*
      * Sends the message

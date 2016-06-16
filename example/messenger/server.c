@@ -91,7 +91,11 @@ int main(int argc, char **argv) {
         goto failure;
     }
     fprintf(stdout, "%s\n", message->body);
+    
+    const char *test_data = stomp_exchange_get(messenger->exchange_properties, 
+                                               "test");
 
+    fprintf(stdout, "test: %s\n", test_data);
 
     /*
      * Disconnects from the broker disregarding any request for confirmation

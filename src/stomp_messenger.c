@@ -48,6 +48,13 @@ stomp_messenger_t *stomp_messenger_init()
         return ret;
     }
 
+    ret->exchange_properties = apr_hash_make(ret->pool);
+    if (!ret->exchange_properties) {
+        stomp_status_set(&ret->status, STOMP_FAILURE,
+                "Unable to initialize the exchange properties structure");
+
+        return ret;
+    }
     
     return ret;
 }
@@ -447,7 +454,7 @@ stomp_status_code_t stomp_send(stomp_messenger_t *messenger,
 {
     stomp_frame frame;
     frame.command = "SEND";
-    frame.headers = apr_hash_make(messenger->pool);
+    frame.headers = apr_hash_copy(messenger->pool, messenger->exchange_properties);
     
     
     apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, 
@@ -462,6 +469,7 @@ stomp_status_code_t stomp_send(stomp_messenger_t *messenger,
         stomp_write_receipt(messenger, &frame, header->receipt);
     }
     
+   
     apr_status_t stat = stomp_write(messenger->connection, &frame, messenger->pool);
     if (stat != APR_SUCCESS) {
         stomp_status_set(&messenger->status, STOMP_FAILURE,

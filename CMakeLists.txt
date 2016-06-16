@@ -47,6 +47,7 @@ add_library(
         src/stomp_engine.c
         src/stomp_status.c
         src/stomp_message.c
+        src/stomp_ex_properties.c
         src/stomp_messenger.c 
 )
 

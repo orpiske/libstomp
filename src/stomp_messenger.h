@@ -27,6 +27,7 @@
 #include "stomp_frame.h"
 #include "stomp_io.h"
 #include "stomp_headers.h"
+#include "stomp_ex_properties.h"
 #include "stomp_message.h"
 
 typedef apr_uri_t stomp_uri_t;
@@ -36,6 +37,9 @@ typedef apr_uri_t stomp_uri_t;
  */
 typedef struct stomp_messenger_t_ {
     stomp_connection *connection;
+    // TODO: not exactly the ideal place for this (nor the ideal design), but
+    // will remain in this place until I come up with a better solution
+    stomp_exchange_properties_t *exchange_properties;
     stomp_status_t status;
     apr_pool_t *pool;
     stomp_uri_t uri;
@@ -47,6 +51,7 @@ typedef struct stomp_messenger_t_ {
  * @return A messenger object that can be used to exchange data via STOMP
  */
 stomp_messenger_t *stomp_messenger_init();
+
 
 /**
  * Destroys the messenger object. The object will be unusable after destruction
