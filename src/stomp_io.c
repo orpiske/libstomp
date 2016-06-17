@@ -136,7 +136,7 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection,
     
     rc = apr_env_get(&debug, "STOMP_DEBUG", pool);
     if( rc != APR_SUCCESS ) { 
-        return rc; 
+        debug = NULL;
     }
     
     rc = apr_pool_create(&tpool, pool);
@@ -309,7 +309,7 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection,
     
     rc = apr_env_get(&debug, "STOMP_DEBUG", pool);
     if( rc != APR_SUCCESS ) { 
-        return rc; 
+        debug = NULL;
     }
         
 #define CHECK_SUCCESS if( rc!=APR_SUCCESS ) { return rc; }
@@ -321,9 +321,6 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection,
     f->headers = apr_hash_make(pool);
     if (f->headers == NULL)
         return APR_ENOMEM;
-
-    
-    if( rc!=APR_SUCCESS ) { return rc; }
 
     // Parse the frame out.
     {
