@@ -14,20 +14,46 @@
  limitations under the License.
  */
 #include "stomp_ex_properties.h"
+#include "stomp_status.h"
 
-void stomp_exchange_add(stomp_exchange_properties_t *properties, 
-                              const char *name, const char *value)
+void
+stomp_exchange_add(stomp_exchange_properties_t *properties,
+        const char *name, const char *value)
 {
-  apr_hash_set(properties, name, APR_HASH_KEY_STRING, value);
+    apr_hash_set(properties, name, APR_HASH_KEY_STRING, value);
 }
 
-const char *stomp_exchange_get(stomp_exchange_properties_t *properties, 
-                              const char *name)
+const char *
+stomp_exchange_get(stomp_exchange_properties_t *properties,
+        const char *name)
 {
-  return apr_hash_get(properties, name, APR_HASH_KEY_STRING);
+    return apr_hash_get(properties, name, APR_HASH_KEY_STRING);
 }
 
+void
+stomp_exchange_clear(stomp_exchange_properties_t *properties)
+{
+    apr_hash_clear(properties);
+}
 
-void stomp_exchange_clear(stomp_exchange_properties_t *properties) {
-  apr_hash_clear (properties);
+stomp_status_code_t
+stomp_exchange_util_ctime(stomp_exchange_properties_t *properties, 
+                          stomp_status_t *stat)
+{
+    apr_time_t now = apr_time_now();
+    char buff[APR_CTIME_LEN] = {0};
+
+    apr_status_t ret = apr_ctime(&buff, now);
+
+    if (ret != STOMP_SUCCESS) {
+        if (stat) {
+            stat->code = STOMP_FAILURE;
+            stomp_status_set(stat, STOMP_FAILURE,
+                "Unable to format the time for appending to the exchange");
+        }
+        
+        return ret;
+    }
+    
+    stomp_exchange_add(properties, STOMP_CREATION_TIME, &buff);
 }

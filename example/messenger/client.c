@@ -84,6 +84,14 @@ int main(int argc, char **argv)
     // Sets an arbitrary property to the exchange
     stomp_exchange_add(messenger->exchange_properties, "test", "123");
 
+    stat = stomp_exchange_util_ctime(messenger->exchange_properties,
+                                     &messenger->status);
+    if (stat != STOMP_SUCCESS) {
+        fprintf(stderr, messenger->status.message);
+
+        goto failure_with_message;
+    }
+
     /*
      * Sends the message
      */

@@ -96,6 +96,10 @@ int main(int argc, char **argv) {
                                                "test");
     fprintf(stdout, "test: %s\n", test_data);
     
+    
+    const char *ctime = stomp_exchange_get(messenger->exchange_properties, 
+                                               STOMP_CREATION_TIME);
+    fprintf(stdout, "Creation time: %s\n", ctime);
 
     /*
      * Disconnects from the broker disregarding any request for confirmation
