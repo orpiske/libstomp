@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
     if (!messenger) {
         fprintf(stderr, "Unable to initialize stomp messenger\n");
                 
-        goto failure;
+        goto failure_without_message;
     }
     
     
@@ -41,9 +41,9 @@ int main(int argc, char **argv) {
      */
     stat = stomp_set_endpoint(messenger, "stomp://localhost:61613/queue/test.stomp.queue");
     if (stat != STOMP_SUCCESS) {
-        fprintf(stderr, messenger->status.message);
+        fprintf(stderr, "%s\n", messenger->status.message);
         
-        goto failure;
+        goto failure_without_message;
     }
        
     
@@ -52,9 +52,9 @@ int main(int argc, char **argv) {
      */
     stat = stomp_connect(messenger, NULL);
     if (stat != STOMP_SUCCESS) {
-        fprintf(stderr, messenger->status.message);
+        fprintf(stderr, "%s\n", messenger->status.message);
         
-        goto failure;
+        goto failure_without_message;
     }
     
     
@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
     if (stat != STOMP_SUCCESS) {
         fprintf(stderr, "%s\n", messenger->status.message);
         
-        goto failure;
+        goto failure_without_message;
     }
 
     
@@ -86,25 +86,25 @@ int main(int argc, char **argv) {
     
     stat = stomp_receive(messenger, &receive_header, message);
     if (stat != STOMP_SUCCESS) {
-        fprintf(stderr, messenger->status.message);
+        fprintf(stderr, "%s\n", messenger->status.message);
         
-        goto failure;
+        goto failure_with_message;
     }
     fprintf(stdout, "%s\n", message->body);
     
     const char *test_data = stomp_exchange_get(messenger->exchange_properties, 
                                                "test");
-
     fprintf(stdout, "test: %s\n", test_data);
+    
 
     /*
      * Disconnects from the broker disregarding any request for confirmation
      */    
     stat = stomp_disconnect(messenger, NULL);
     if (stat != STOMP_SUCCESS) {
-        fprintf(stderr, messenger->status.message);
+        fprintf(stderr, "%s\n", messenger->status.message);
         
-        goto failure;
+        goto failure_with_message;
     }
     
     
@@ -115,8 +115,10 @@ int main(int argc, char **argv) {
     stomp_messenger_destroy(&messenger);
     return EXIT_SUCCESS;
     
-    failure:
+    failure_with_message:
     stomp_message_destroy(&message);
+    
+    failure_without_message:
     stomp_messenger_destroy(&messenger);
     return EXIT_FAILURE;
 
