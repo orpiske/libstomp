@@ -20,20 +20,20 @@ void
 stomp_exchange_add(stomp_exchange_properties_t *properties,
         const char *name, const char *value)
 {
-    apr_hash_set(properties, name, APR_HASH_KEY_STRING, value);
+    apr_hash_set((apr_hash_t *) properties, name, APR_HASH_KEY_STRING, value);
 }
 
 const char *
 stomp_exchange_get(stomp_exchange_properties_t *properties,
         const char *name)
 {
-    return apr_hash_get(properties, name, APR_HASH_KEY_STRING);
+    return apr_hash_get((apr_hash_t *) properties, name, APR_HASH_KEY_STRING);
 }
 
 void
 stomp_exchange_clear(stomp_exchange_properties_t *properties)
 {
-    apr_hash_clear(properties);
+    apr_hash_clear((apr_hash_t *) properties);
 }
 
 stomp_status_code_t
@@ -41,19 +41,29 @@ stomp_exchange_util_ctime(stomp_exchange_properties_t *properties,
                           stomp_status_t *stat)
 {
     apr_time_t now = apr_time_now();
-    char buff[APR_CTIME_LEN] = {0};
-
-    apr_status_t ret = apr_ctime(&buff, now);
-
-    if (ret != STOMP_SUCCESS) {
+    apr_pool_t *pool =  apr_hash_pool_get((apr_hash_t *) properties);
+    
+    if (!pool) {
         if (stat) {
-            stat->code = STOMP_FAILURE;
+            stomp_status_set(stat, STOMP_FAILURE,
+                "Invalid exchange properties structure");
+        }
+        
+        return STOMP_FAILURE;
+    }
+    
+    char *buff = apr_pcalloc(pool, APR_CTIME_LEN);
+    apr_status_t ret = apr_ctime(buff, now);
+
+    if (ret != APR_SUCCESS) {
+        if (stat) {
             stomp_status_set(stat, STOMP_FAILURE,
                 "Unable to format the time for appending to the exchange");
         }
         
-        return ret;
+        return STOMP_FAILURE;
     }
     
-    stomp_exchange_add(properties, STOMP_CREATION_TIME, &buff);
+    stomp_exchange_add(properties, STOMP_CREATION_TIME, buff);
+    return STOMP_SUCCESS;
 }
