@@ -16,7 +16,8 @@
  * 
  * ********************************************************************
  * The contents of this file are part of the original stomp.c and stomp.h file 
- * from which this code is derived
+ * from which this code is derived. The original code was modified with bug 
+ * fixes, debug checks and formatting changes
  */
 
 #include "stomp_io.h"
@@ -120,7 +121,9 @@ APR_DECLARE(apr_status_t) stomp_read_line(stomp_connection *connection, char **d
     return APR_SUCCESS;
 }
 
-APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection, char **data, apr_pool_t *pool)
+APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection, 
+                                            char **data, apr_size_t *body_len, 
+                                            apr_pool_t *pool)
 {
     apr_pool_t *tpool;
     apr_status_t rc;
@@ -129,6 +132,13 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection, char *
     apr_size_t bytesRead = 0;
     char *p;
 
+    char *debug;
+    
+    rc = apr_env_get(&debug, "STOMP_DEBUG", pool);
+    if( rc != APR_SUCCESS ) { 
+        return rc; 
+    }
+    
     rc = apr_pool_create(&tpool, pool);
     if (rc != APR_SUCCESS) {
         return rc;
@@ -146,7 +156,8 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection, char *
         apr_size_t length = 1;
         apr_status_t rc = apr_socket_recv(connection->socket, tail->data + i, &length);
         CHECK_SUCCESS;
-
+        
+        
         if (length == 1) {
             i++;
             bytesRead++;
@@ -175,13 +186,23 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection, char *
             }
         }
     }
+    
+    if (debug) {
+        fprintf(stdout, "Tail data: %s\n", tail->data);
+    }
 #undef CHECK_SUCCESS
+    
+    (*body_len) = bytesRead;
 
     // Now we have the whole frame and know how big it is.  Allocate it's buffer
     *data = apr_pcalloc(pool, bytesRead);
     p = *data;
     if (p == NULL) {
         apr_pool_destroy(tpool);
+        if (debug) {
+            fprintf(stderr, "Not enough memory on for copying the data\n");
+        }
+        
         return APR_ENOMEM;
     }
 
@@ -192,6 +213,11 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection, char *
         p += len;
         bytesRead -= len;
     }
+    
+    if (debug) {
+        fprintf(stdout, "Head data: %s\n", head->data);
+    }
+
 
     apr_pool_destroy(tpool);
     return APR_SUCCESS;
@@ -272,11 +298,21 @@ APR_DECLARE(apr_status_t) stomp_write(stomp_connection *connection, stomp_frame 
     return APR_SUCCESS;
 }
 
-APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection, stomp_frame **frame, apr_pool_t *pool)
+APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection, 
+                                     stomp_frame **frame, apr_pool_t *pool)
 {
 
     apr_status_t rc;
     stomp_frame *f;
+    
+    char *debug;
+    
+    rc = apr_env_get(&debug, "STOMP_DEBUG", pool);
+    if( rc != APR_SUCCESS ) { 
+        return rc; 
+    }
+        
+#define CHECK_SUCCESS if( rc!=APR_SUCCESS ) { return rc; }
 
     f = apr_pcalloc(pool, sizeof (stomp_frame));
     if (f == NULL)
@@ -286,7 +322,8 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection, stomp_frame *
     if (f->headers == NULL)
         return APR_ENOMEM;
 
-#define CHECK_SUCCESS if( rc!=APR_SUCCESS ) { return rc; }
+    
+    if( rc!=APR_SUCCESS ) { return rc; }
 
     // Parse the frame out.
     {
@@ -298,11 +335,15 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection, stomp_frame *
         CHECK_SUCCESS;
 
         f->command = p;
-
+        
         // Start parsing the headers.
         while (1) {
             rc = stomp_read_line(connection, &p, &length, pool);
             CHECK_SUCCESS;
+            
+            if (debug) {
+                fprintf(stdout, "Parsing (%s): %s\n", f->command, p);
+            }
 
             // Done with headers
             if (length == 0)
@@ -334,7 +375,8 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection, stomp_frame *
 
         // Check for content length
         {
-            char* content_length = apr_hash_get(f->headers, "content-length", APR_HASH_KEY_STRING);
+            char* content_length = apr_hash_get(f->headers, "content-length", 
+                                                APR_HASH_KEY_STRING);
             if (content_length) {
                 char endbuffer[2];
                 apr_size_t length = 2;
@@ -351,7 +393,14 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection, stomp_frame *
                     return APR_EGENERAL;
             } else {
                 // The remainder of the buffer (including the \n at the end) is the body)
-                rc = stomp_read_buffer(connection, &f->body, pool);
+                rc = stomp_read_buffer(connection, &f->body, &f->body_length, 
+                                       pool);
+                
+                if (debug) {
+                   fprintf(stdout, "Read the remainder of the buffer: %s\n", 
+                           f->body);
+                }
+                
                 CHECK_SUCCESS;
             }
         }

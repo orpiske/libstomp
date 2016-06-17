@@ -24,6 +24,9 @@
 #include <apr-1/apr_general.h>
 #include <apr-1/apr_network_io.h>
 #include <apr-1/apr_hash.h>
+#include <apr-1/apr_env.h>
+
+#include <stdio.h>
 
 #include "stomp_connection.h"
 #include "stomp_frame.h"
