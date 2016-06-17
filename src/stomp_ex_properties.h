@@ -17,6 +17,9 @@
 #include <apr-1/apr_hash.h>
 #include <apr-1/apr_time.h>
 
+#include <inttypes.h>
+#include <stdint.h>
+
 #include "stomp_status.h"
 
 #ifdef __cplusplus

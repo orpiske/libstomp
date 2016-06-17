@@ -52,17 +52,9 @@ stomp_exchange_util_ctime(stomp_exchange_properties_t *properties,
         return STOMP_FAILURE;
     }
     
-    char *buff = apr_pcalloc(pool, APR_CTIME_LEN);
-    apr_status_t ret = apr_ctime(buff, now);
-
-    if (ret != APR_SUCCESS) {
-        if (stat) {
-            stomp_status_set(stat, STOMP_FAILURE,
-                "Unable to format the time for appending to the exchange");
-        }
-        
-        return STOMP_FAILURE;
-    }
+    char *buff = apr_pcalloc(pool, 32);
+    
+    snprintf(buff, 64, "%"PRIi64"", apr_time_as_msec(now));
     
     stomp_exchange_add(properties, STOMP_CREATION_TIME, buff);
     return STOMP_SUCCESS;
