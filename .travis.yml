@@ -3,13 +3,9 @@ os:
 sudo: false
 language:
 - c
-addons:
-  apt:
-    packages:
-    - doxygen
-    - cmake
-    - libapr1-dev
-    - libaprutil1-dev
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y cmake libapr1-dev libaprutil1-dev doxygen
 before_script:
 - mkdir build
 - cd build
