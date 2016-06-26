@@ -1,6 +1,6 @@
 Overview
 
-Using libstomp is as simple as:
+Using litestomp is as simple as:
 
     Initializing APR
     Establishing a stomp connection
@@ -8,7 +8,7 @@ Using libstomp is as simple as:
     Disconnecting
     APR shutdown
 
-See the libstomp Examples
+See the litestomp Examples
 Initializing APR
 
 The following snipplet of code initializes the APR runtime.

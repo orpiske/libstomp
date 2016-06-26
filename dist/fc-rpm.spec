@@ -2,14 +2,14 @@
 %global debug_package %{nil}
 
 Summary:            A client library for the STOMP messaging protocol
-Name:               libstomp
+Name:               litestomp
 Version:            0.0.1
 Release:            1%{?dist}
 License:            Apache-2.0
 Summary:            C library used to talk the Stomp 
 Group:              Development/Tools
-Source:             libstomp-%{version}.tar.gz
-URL:                https://github.com/orpiske/libstomp
+Source:             litestomp-%{version}.tar.gz
+URL:                https://github.com/orpiske/litestomp
 BuildRequires:      cmake
 BuildRequires:      make
 BuildRequires:      gcc
@@ -24,7 +24,7 @@ This library implements a simple STOMP, a text oriented messaging
 protocol that can be used to talk to message brokers such as Apace ActiveMQ.
 
 %prep
-%autosetup -n libstomp-%{version}
+%autosetup -n litestomp-%{version}
 
 %build
 mkdir build && cd build

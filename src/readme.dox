@@ -1,6 +1,6 @@
 /** @mainpage
 
-This page contains the documentation for libstomp. This is a library that can be
+This page contains the documentation for litestomp. This is a library that can be
 used to talk to message brokers, such as Apache ActiveMQ, using the STOMP 
 protocol. It is writen in C and supports the STOMP protocol 1.2.
 

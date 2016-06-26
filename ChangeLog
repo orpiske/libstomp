@@ -1,1 +1,3 @@
+* Renamed the project to litestomp to prevent confusion with the older library implementation
+
 * Forked libstomp
