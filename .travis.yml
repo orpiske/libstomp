@@ -1,6 +1,6 @@
 os:
 - linux
-sudo: false
+sudo: true
 language:
 - c
 before_install:
