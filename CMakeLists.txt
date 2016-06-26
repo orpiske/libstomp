@@ -42,7 +42,7 @@ if (${CMAKE_SYSTEM_NAME} EQUAL "Linux")
 endif (${CMAKE_SYSTEM_NAME} EQUAL "Linux") 
 
 add_library(
-	stomp SHARED
+	litestomp SHARED
         src/stomp_io.c
         src/stomp_engine.c
         src/stomp_status.c
@@ -52,13 +52,13 @@ add_library(
 )
 
 target_link_libraries(
-    stomp
+    litestomp
     apr-1
     aprutil-1
 )
 
 install(TARGETS
-        stomp
+        litestomp
 	LIBRARY DESTINATION ${CPP_LIBRARY_DIR}
 )
 

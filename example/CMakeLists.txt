@@ -26,23 +26,23 @@ add_executable(
 
 target_link_libraries(
 	engine-server
-	stomp
+	litestomp
 )
 
 target_link_libraries(
 	engine-client
-	stomp
+	litestomp
 )
 
 target_link_libraries(
 	messenger-client
-	stomp
+	litestomp
 )
 
 
 target_link_libraries(
 	messenger-server
-	stomp
+	litestomp
 )
 
 
