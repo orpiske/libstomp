@@ -3,7 +3,7 @@ Welcome to litestomp
 
  Build Status
 ----
-[![Linux Build Status](https://travis-ci.org/orpiske/litestomp.svg?branch=master)](https://travis-ci.org/orpiske/litestomp) 
+Linux Build Status: [![Linux Build Status](https://travis-ci.org/orpiske/litestomp.svg?branch=master)](https://travis-ci.org/orpiske/litestomp) 
 
 Introduction:
 
