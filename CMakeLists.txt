@@ -35,6 +35,14 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     endif(EXISTS "/etc/ubuntu-release")
 endif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 
+
+if(NOT CMAKE_BUILD_TYPE)
+	SET(CMAKE_BUILD_TYPE Debug CACHE STRING
+      	"Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+      	FORCE
+	)
+endif(NOT CMAKE_BUILD_TYPE)
+
 if (CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_C_FLAGS "-Wall -Wshadow -std=c99" CACHE STRING
         "Flags used by the compiler during all build types." FORCE
