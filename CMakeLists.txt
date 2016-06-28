@@ -72,7 +72,7 @@ IF (UNIX)
 ENDIF (UNIX)
 
 if (CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_C_FLAGS "-Wall -Wshadow -std=c99" CACHE STRING
+    set(CMAKE_C_FLAGS "-Wall -Wshadow -std=c99 -pipe" CACHE STRING
         "Flags used by the compiler during all build types." FORCE
     )
     set(CMAKE_C_FLAGS_DEBUG "-fdiagnostics-color=auto -g" CACHE STRING
