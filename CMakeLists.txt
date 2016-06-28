@@ -20,6 +20,8 @@ else(CMAKE_SIZEOF_VOID_P EQUAL 8)
 endif(CMAKE_SIZEOF_VOID_P EQUAL 8)
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    add_definitions(-DLINUX_BUILD) 
+
     if(EXISTS "/etc/redhat-release")
         add_definitions(-D__RH_DISTRO__)
     endif(EXISTS "/etc/redhat-release")
@@ -32,11 +34,6 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         add_definitions(-D__UBUNTU_DISTRO__)
     endif(EXISTS "/etc/ubuntu-release")
 endif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-
-
-if (${CMAKE_SYSTEM_NAME} EQUAL "Linux") 
- add_definitions(-DLINUX_BUILD) 
-endif (${CMAKE_SYSTEM_NAME} EQUAL "Linux")
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_C_FLAGS "-Wall -Wshadow -std=c99" CACHE STRING
