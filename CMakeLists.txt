@@ -43,6 +43,34 @@ if(NOT CMAKE_BUILD_TYPE)
 	)
 endif(NOT CMAKE_BUILD_TYPE)
 
+macro (FailIfNotSet VARIABLE name)
+	IF (NOT ${VARIABLE}) 
+		SET(MSG "** A required file, " ${name} ", was not found on your system **")
+		MESSAGE(FATAL_ERROR ${MSG})
+	ENDIF (NOT ${VARIABLE}) 
+endmacro(FailIfNotSet)
+
+include (CheckIncludeFiles)
+
+CHECK_INCLUDE_FILES(sys/types.h HAVE_SYS_TYPES_H)
+FailIfNotSet(HAVE_SYS_TYPES_H sys/types.h)
+
+
+IF (UNIX)
+	CHECK_INCLUDE_FILES(unistd.h HAVE_UNISTD_H)
+	FailIfNotSet(HAVE_UNISTD_H unistd.h)
+
+	CHECK_INCLUDE_FILES(stdint.h HAVE_STDINT_H)
+	FailIfNotSet(HAVE_STDINT_H stdint.h)
+
+	CHECK_INCLUDE_FILES(stdlib.h HAVE_STDLIB_H)
+	FailIfNotSet(HAVE_STDLIB_H stdlib.h)
+
+	
+	CHECK_INCLUDE_FILES(stdio.h HAVE_STDIO_H)
+	FailIfNotSet(HAVE_STDIO_H stdio.h)
+ENDIF (UNIX)
+
 if (CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_C_FLAGS "-Wall -Wshadow -std=c99" CACHE STRING
         "Flags used by the compiler during all build types." FORCE
