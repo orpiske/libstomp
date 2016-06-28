@@ -6,7 +6,7 @@ Welcome to litestomp
 Linux Build Status: [![Linux Build Status](https://travis-ci.org/orpiske/litestomp.svg?branch=master)](https://travis-ci.org/orpiske/litestomp) 
 
 Introduction:
-
+----
 
 This is a fork of the old litestomp library, modified for simplicity and 
 reusability. This library implements a simple STOMP, a text oriented messaging
