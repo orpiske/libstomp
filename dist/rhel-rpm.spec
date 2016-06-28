@@ -36,7 +36,7 @@ cd build
 make install
 
 %files
-%doc AUTHORS README LICENSE COPYING
+%doc AUTHORS README.md LICENSE COPYING
 %{_libdir}/*
 %{_includedir}/*
 
