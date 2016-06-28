@@ -24,9 +24,9 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         add_definitions(-D__RH_DISTRO__)
     endif(EXISTS "/etc/redhat-release")
 
-    if(EXISTS "/etc/debian-release")
+    if(EXISTS "/etc/debian_version")
         add_definitions(-D__DEBIAN_DISTRO__)
-    endif(EXISTS "/etc/debian-release")
+    endif(EXISTS "/etc/debian_version")
 
     if(EXISTS "/etc/ubuntu-release")
         add_definitions(-D__UBUNTU_DISTRO__)
