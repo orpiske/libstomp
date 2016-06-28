@@ -23,9 +23,16 @@
 #ifndef STOMP_CONNECTION_H
 #define STOMP_CONNECTION_H
 
+#ifdef __DEBIAN_DISTRO__ || __UBUNTU_DISTRO__
+#include <apr-1.0/apr_general.h>
+#include <apr-1.0/apr_network_io.h>
+#include <apr-1.0/apr_hash.h>
+#else
 #include <apr-1/apr_general.h>
 #include <apr-1/apr_network_io.h>
 #include <apr-1/apr_hash.h>
+#endif
+
 
 #include "stomp_frame.h"
 

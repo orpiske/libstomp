@@ -16,10 +16,19 @@
 #ifndef STOMP_H_
 #define STOMP_H_
 
+#ifdef __DEBIAN_DISTRO__ || __UBUNTU_DISTRO__
+#include <apr-1.0/apr_general.h>
+#include <apr-1.0/apr_network_io.h>
+#include <apr-1.0/apr_hash.h>
+#include <apr-1.0/apr_uri.h>
+#else
 #include <apr-1/apr_general.h>
 #include <apr-1/apr_network_io.h>
 #include <apr-1/apr_hash.h>
 #include <apr-1/apr_uri.h>
+#endif // __DEBIAN_DISTRO__ || __UBUNTU_DISTRO__
+
+
 
 #include "stomp_status.h"
 #include "stomp_connection.h"

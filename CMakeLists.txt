@@ -19,6 +19,20 @@ else(CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(CPP_LIBRARY_DIR "lib")
 endif(CMAKE_SIZEOF_VOID_P EQUAL 8)
 
+if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    if(EXISTS "/etc/redhat-release")
+        add_definitions(-D__RH_DISTRO__)
+    endif(EXISTS "/etc/redhat-release")
+
+    if(EXISTS "/etc/debian-release")
+        add_definitions(-D__DEBIAN_DISTRO__)
+    endif(EXISTS "/etc/debian-release")
+
+    if(EXISTS "/etc/ubuntu-release")
+        add_definitions(-D__UBUNTU_DISTRO__)
+    endif(EXISTS "/etc/ubuntu-release")
+endif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+
 
 if (${CMAKE_SYSTEM_NAME} EQUAL "Linux") 
  add_definitions(-DLINUX_BUILD) 
