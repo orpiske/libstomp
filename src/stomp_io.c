@@ -481,7 +481,6 @@ bool stomp_io_can_read(stomp_connection *connection) {
     
     
     if (rc == APR_TIMEUP) {
-        fprintf(stdout, "Time up!\n");
         return false;
     }
     
