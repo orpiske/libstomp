@@ -86,7 +86,11 @@ void stomp_messenger_destroy(stomp_messenger_t **messenger)
 void stomp_messenger_set_timeout(stomp_messenger_t *messenger, 
                                               int32_t timeout)
 {
+#if defined(apr_time_from_msec)
     stomp_engine_set_timeout(messenger->connection, apr_time_from_msec(timeout));
+#else
+    stomp_engine_set_timeout(messenger->connection, (timeout) * 1000);
+#endif
 }
 
 stomp_status_code_t stomp_set_endpoint(stomp_messenger_t *messenger, const char *uri)
