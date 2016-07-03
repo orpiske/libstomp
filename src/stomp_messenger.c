@@ -206,6 +206,8 @@ static stomp_status_code_t stomp_process_receipt(stomp_messenger_t *messenger) {
 
         return STOMP_FAILURE;
     }
+    
+    return STOMP_SUCCESS;
 }
 
 static inline void stomp_write_receipt(stomp_messenger_t *messenger, 
