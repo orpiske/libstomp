@@ -169,8 +169,11 @@ stomp_status_code_t stomp_connect(stomp_messenger_t *messenger,
             messenger->pool);
 
     if (stat != APR_SUCCESS) {
+        stomp_status_t engine_status = stomp_engine_last_status();
+        
         stomp_status_set(&messenger->status, STOMP_FAILURE,
-                "Unable to write the frame data to the underlying connection");
+                "Unable to write the frame data to the underlying connection: %s",
+                         engine_status.message);
 
         return STOMP_FAILURE;
     }
@@ -186,8 +189,11 @@ stomp_status_code_t stomp_connect(stomp_messenger_t *messenger,
     stomp_frame *reply_frame;
     stat = stomp_read(messenger->connection, &reply_frame, messenger->pool);
     if (stat != APR_SUCCESS) {
+        stomp_status_t engine_status = stomp_engine_last_status();
+        
         stomp_status_set(&messenger->status, STOMP_FAILURE,
-                "Unable to write the frame data to the underlying connection");
+                "Unable to read the frame data to the underlying connection: %s",
+                         engine_status.message);
 
         return STOMP_FAILURE;
     }
@@ -218,9 +224,11 @@ static stomp_status_code_t stomp_process_receipt(stomp_messenger_t *messenger) {
     stomp_frame *reply_frame;
     apr_status_t stat = stomp_read(messenger->connection, &reply_frame, messenger->pool);
     if (stat != APR_SUCCESS) {
+        stomp_status_t engine_status = stomp_engine_last_status();
+        
         stomp_status_set(&messenger->status, STOMP_FAILURE,
-                "Unable to read the frame data to the underlying connection: %s", 
-                reply_frame->command);
+                "Unable to read the frame data to the underlying connection: %s",
+                         engine_status.message);
 
         return STOMP_FAILURE;
     }
@@ -259,8 +267,11 @@ stomp_status_code_t stomp_disconnect(stomp_messenger_t *messenger,
 
     apr_status_t stat = stomp_write(messenger->connection, &frame, messenger->pool);
     if (stat != APR_SUCCESS) {
+        stomp_status_t engine_status = stomp_engine_last_status();
+        
         stomp_status_set(&messenger->status, STOMP_FAILURE,
-                "Unable to write the frame data to the underlying connection");
+                "Unable to write the frame data to the underlying connection: %s",
+                         engine_status.message);
 
         return STOMP_FAILURE;
     }
@@ -302,8 +313,11 @@ stomp_status_code_t stomp_subscribe(stomp_messenger_t *messenger,
     
     apr_status_t stat = stomp_write(messenger->connection, &frame, messenger->pool);
     if (stat != APR_SUCCESS) {
+        stomp_status_t engine_status = stomp_engine_last_status();
+        
         stomp_status_set(&messenger->status, STOMP_FAILURE,
-                "Unable to write the frame data to the underlying connection");
+                "Unable to write the frame data to the underlying connection: %s",
+                         engine_status.message);
 
         return STOMP_FAILURE;
     }
@@ -340,8 +354,11 @@ stomp_status_code_t stomp_unsubscribe(stomp_messenger_t *messenger,
      
     apr_status_t stat = stomp_write(messenger->connection, &frame, messenger->pool);
     if (stat != APR_SUCCESS) {
+        stomp_status_t engine_status = stomp_engine_last_status();
+        
         stomp_status_set(&messenger->status, STOMP_FAILURE,
-                "Unable to write the frame data to the underlying connection");
+                "Unable to write the frame data to the underlying connection: %s",
+                         engine_status.message);
 
         return STOMP_FAILURE;
     }
@@ -423,8 +440,11 @@ stomp_status_code_t stomp_nack(stomp_messenger_t *messenger,
 
     apr_status_t stat = stomp_write(messenger->connection, &frame, messenger->pool);
     if (stat != APR_SUCCESS) {
+        stomp_status_t engine_status = stomp_engine_last_status();
+        
         stomp_status_set(&messenger->status, STOMP_FAILURE,
-                "Unable to write the frame data to the underlying connection");
+                "Unable to write the frame data to the underlying connection: %s",
+                         engine_status.message);
 
         return STOMP_FAILURE;
     }
@@ -455,8 +475,11 @@ static stomp_status_code_t stomp_transaction(stomp_messenger_t *messenger,
 
     apr_status_t stat = stomp_write(messenger->connection, &frame, messenger->pool);
     if (stat != APR_SUCCESS) {
+        stomp_status_t engine_status = stomp_engine_last_status();
+        
         stomp_status_set(&messenger->status, STOMP_FAILURE,
-                "Unable to write the frame data to the underlying connection");
+                "Unable to write the frame data to the underlying connection: %s",
+                         engine_status.message);
 
         return STOMP_FAILURE;
     }
@@ -510,8 +533,11 @@ stomp_status_code_t stomp_send(stomp_messenger_t *messenger,
    
     apr_status_t stat = stomp_write(messenger->connection, &frame, messenger->pool);
     if (stat != APR_SUCCESS) {
+        stomp_status_t engine_status = stomp_engine_last_status();
+        
         stomp_status_set(&messenger->status, STOMP_FAILURE,
-                "Unable to write the frame data to the underlying connection");
+                "Unable to write the frame data to the underlying connection: %s",
+                         engine_status.message);
 
         return STOMP_FAILURE;
     }
