@@ -14,13 +14,13 @@ A simple server that connects to local host and exchange 1 message with the serv
 /** @example engine/client.c
 
 A modification of the original example, using the lower level connection engine 
-for message exchange
+for message exchange. It is an outdated example.
 
 */
 
 /** @example engine/server.c
 
 A modification of the original example, using the lower level connection engine 
-for message exchange
+for message exchange. It is an outdated example.
 
 */
