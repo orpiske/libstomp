@@ -21,7 +21,7 @@
 #ifndef STOMP_IO_H
 #define STOMP_IO_H
 
-#ifdef __DEBIAN_DISTRO__ || __UBUNTU_DISTRO__
+#if defined(__DEBIAN_DISTRO__) || defined(__UBUNTU_DISTRO__)
 #include <apr-1.0/apr_general.h>
 #include <apr-1.0/apr_network_io.h>
 #include <apr-1.0/apr_hash.h>
@@ -31,7 +31,7 @@
 #include <apr-1/apr_network_io.h>
 #include <apr-1/apr_hash.h>
 #include <apr-1/apr_env.h>
-#endif // __DEBIAN_DISTRO__ || __UBUNTU_DISTRO__
+#endif // defined(__DEBIAN_DISTRO__) || defined(__UBUNTU_DISTRO__)
 
 
 

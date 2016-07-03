@@ -28,7 +28,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#ifdef __DEBIAN_DISTRO__ || __UBUNTU_DISTRO__
+#if defined(__DEBIAN_DISTRO__) || defined(__UBUNTU_DISTRO__)
  #include <apr-1.0/apr.h>
  #include <apr-1.0/apr_strings.h>
  #include <apr-1.0/apr_general.h>
@@ -40,7 +40,7 @@
  #include <apr-1/apr_general.h>
  #include <apr-1/apr_network_io.h>
  #include <apr-1/apr_hash.h>
-#endif // #ifdef __DEBIAN_DISTRO__ || __UBUNTU_DISTRO__
+#endif // defined(__DEBIAN_DISTRO__) || defined(__UBUNTU_DISTRO__)
 
 
 #include "stomp_connection.h"
