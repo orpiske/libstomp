@@ -18,6 +18,9 @@
  * The contents of this file are part of the original stomp.c and stomp.h file 
  * from which this code is derived. The original code was modified with bug 
  * fixes, debug checks and formatting changes
+ * 
+ * The code was also modified to replace the definitions of CHECK_SUCCESS with
+ * regular/inline code
  */
 
 #include "stomp_io.h"
@@ -254,7 +257,6 @@ APR_DECLARE(apr_status_t) stomp_write(stomp_connection *connection, stomp_frame 
 {
     apr_status_t rc;
 
-#define CHECK_SUCCESS if( rc!=APR_SUCCESS ) { return rc; }
     // Write the command.
     rc = stomp_write_buffer(connection, frame->command, strlen(frame->command));
     if (rc != APR_SUCCESS) { 
