@@ -25,6 +25,20 @@
 
 #include "stomp_io.h"
 
+static stomp_status_t error = { .message = NULL, .code = STOMP_SUCCESS };
+
+static inline void set_error(apr_status_t rc, const char *msg_prefix) {
+    char apr_error_msg[80] = {0};
+    
+    apr_strerror(rc, apr_error_msg, sizeof(apr_error_msg));
+
+    stomp_status_set(&error, STOMP_FAILURE, "%s: %s", msg_prefix, apr_error_msg);
+}
+
+stomp_status_t stomp_io_last_status() {
+    return error;
+}
+
 /********************************************************************************
  * 
  * Wrappers around the apr_socket_send and apr_socket_recv calls so that they 
@@ -42,6 +56,13 @@ APR_DECLARE(apr_status_t) stomp_write_buffer(stomp_connection *connection, const
         remaining -= length;
         //      size += length;
         if (rc != APR_SUCCESS) {
+            char msgbuf[80] = {0};
+        
+            apr_strerror(rc, msgbuf, sizeof(msgbuf));
+        
+            stomp_status_set(&error, STOMP_FAILURE, "unable to write data: %s",
+                             msgbuf);
+            
             return rc;
         }
     }
@@ -65,6 +86,7 @@ APR_DECLARE(apr_status_t) stomp_read_line(stomp_connection *connection, char **d
 
     head = tail = apr_pcalloc(tpool, sizeof (data_block_list));
     if (head == NULL) {
+        stomp_status_set(&error, STOMP_FAILURE, "not enough memory");
         return APR_ENOMEM;
     }
     
@@ -91,6 +113,8 @@ APR_DECLARE(apr_status_t) stomp_read_line(stomp_connection *connection, char **d
                 tail->data[i - 1] = 0;
                 break;
             } else if (tail->data[i - 1] == 0) {
+                stomp_status_set(&error, STOMP_FAILURE, "protocol error");
+                
                 // Encountered 0 before end of line
                 apr_pool_destroy(tpool);
                 return APR_EGENERAL;
@@ -100,6 +124,7 @@ APR_DECLARE(apr_status_t) stomp_read_line(stomp_connection *connection, char **d
             if (i >= sizeof ( tail->data)) {
                 tail->next = apr_pcalloc(tpool, sizeof (data_block_list));
                 if (tail->next == NULL) {
+                    stomp_status_set(&error, STOMP_FAILURE, "not enough memory");
                     apr_pool_destroy(tpool);
                     return APR_ENOMEM;
                 }
@@ -114,6 +139,7 @@ APR_DECLARE(apr_status_t) stomp_read_line(stomp_connection *connection, char **d
     p = *data;
     if (p == NULL) {
         apr_pool_destroy(tpool);
+        stomp_status_set(&error, STOMP_FAILURE, "not enough memory");
         return APR_ENOMEM;
     }
 
@@ -130,6 +156,9 @@ APR_DECLARE(apr_status_t) stomp_read_line(stomp_connection *connection, char **d
     return APR_SUCCESS;
     
     err_exit: 
+
+    set_error(rc, "unable to write data: %s");
+            
     apr_pool_destroy(tpool);
     return rc;
 }
@@ -154,11 +183,13 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection,
     
     rc = apr_pool_create(&tpool, pool);
     if (rc != APR_SUCCESS) {
+        stomp_status_set(&error, STOMP_FAILURE, "unable to create a new pool");
         return rc;
     }
 
     head = tail = apr_pcalloc(tpool, sizeof (data_block_list));
     if (head == NULL) {
+        stomp_status_set(&error, STOMP_FAILURE, "not enough memory");
         return APR_ENOMEM;
     }
     
@@ -190,6 +221,7 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection,
                 }
                 
                 if (endline[0] != '\n') {
+                    stomp_status_set(&error, STOMP_FAILURE, "protocol error");
                     return APR_EGENERAL;
                 }
                 break;
@@ -199,6 +231,8 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection,
             if (i >= sizeof ( tail->data)) {
                 tail->next = apr_pcalloc(tpool, sizeof (data_block_list));
                 if (tail->next == NULL) {
+                    stomp_status_set(&error, STOMP_FAILURE, "not enough memory");
+                    
                     apr_pool_destroy(tpool);
                     return APR_ENOMEM;
                 }
@@ -220,9 +254,7 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection,
     p = *data;
     if (p == NULL) {
         apr_pool_destroy(tpool);
-        if (debug) {
-            fprintf(stderr, "Not enough memory on for copying the data\n");
-        }
+        stomp_status_set(&error, STOMP_FAILURE, "not enough memory");
         
         return APR_ENOMEM;
     }
@@ -245,6 +277,8 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection,
     
     err_exit:
     apr_pool_destroy(tpool); 
+    set_error(rc, "unable to read data: %s");
+        
     return rc;
 }
 
@@ -260,14 +294,14 @@ APR_DECLARE(apr_status_t) stomp_write(stomp_connection *connection, stomp_frame 
 
     // Write the command.
     rc = stomp_write_buffer(connection, frame->command, strlen(frame->command));
-    if (rc != APR_SUCCESS) { 
-        return rc; 
+    if (rc != APR_SUCCESS) {
+        goto err_exit;
     }
     
     
     rc = stomp_write_buffer(connection, "\n", 1);
     if (rc != APR_SUCCESS) { 
-        return rc; 
+        goto err_exit;
     }
 
     // Write the headers
@@ -281,21 +315,21 @@ APR_DECLARE(apr_status_t) stomp_write(stomp_connection *connection, stomp_frame 
 
             rc = stomp_write_buffer(connection, key, strlen(key));
             if (rc != APR_SUCCESS) { 
-                return rc; 
+                goto err_exit;
             }
             
             rc = stomp_write_buffer(connection, ":", 1);
             if (rc != APR_SUCCESS) { 
-                return rc; 
+                goto err_exit;
             }
             rc = stomp_write_buffer(connection, value, strlen(value));
             if (rc != APR_SUCCESS) { 
-                return rc; 
+                goto err_exit;
             }
             
             rc = stomp_write_buffer(connection, "\n", 1);
             if (rc != APR_SUCCESS) { 
-                return rc; 
+                goto err_exit;
             }
         }
 
@@ -306,7 +340,7 @@ APR_DECLARE(apr_status_t) stomp_write(stomp_connection *connection, stomp_frame 
             apr_pool_create(&length_pool, pool);
             rc = stomp_write_buffer(connection, "content-length:", 15);
             if (rc != APR_SUCCESS) { 
-                return rc; 
+                goto err_exit;
             }
 
             int body_length = frame->body_length;
@@ -315,12 +349,12 @@ APR_DECLARE(apr_status_t) stomp_write(stomp_connection *connection, stomp_frame 
             length_string = apr_itoa(length_pool, body_length);
             rc = stomp_write_buffer(connection, length_string, strlen(length_string));
             if (rc != APR_SUCCESS) { 
-                return rc; 
+                goto err_exit;
             }
             
             rc = stomp_write_buffer(connection, "\n", 1);
             if (rc != APR_SUCCESS) { 
-                return rc; 
+                goto err_exit;
             }
 
             apr_pool_destroy(length_pool);
@@ -328,7 +362,7 @@ APR_DECLARE(apr_status_t) stomp_write(stomp_connection *connection, stomp_frame 
     }
     rc = stomp_write_buffer(connection, "\n", 1);
     if (rc != APR_SUCCESS) { 
-        return rc; 
+        goto err_exit;
     }
 
     // Write the body.
@@ -338,15 +372,20 @@ APR_DECLARE(apr_status_t) stomp_write(stomp_connection *connection, stomp_frame 
             body_length = strlen(frame->body) + 1;
         rc = stomp_write_buffer(connection, frame->body, body_length);
         if (rc != APR_SUCCESS) { 
-            return rc; 
+            goto err_exit; 
         }
     }
     rc = stomp_write_buffer(connection, "\0\n", 2);
     if (rc != APR_SUCCESS) { 
-        return rc; 
+        goto err_exit;
     }
 
     return APR_SUCCESS;
+    
+    err_exit:
+    set_error(rc, "unable to read data: %s");
+    
+    return rc;
 }
 
 APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection, 
@@ -364,12 +403,16 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection,
     }
         
     f = apr_pcalloc(pool, sizeof (stomp_frame));
-    if (f == NULL)
+    if (f == NULL) {
+        stomp_status_set(&error, STOMP_FAILURE, "not enough memory");
         return APR_ENOMEM;
+    }
 
     f->headers = apr_hash_make(pool);
-    if (f->headers == NULL)
+    if (f->headers == NULL) { 
+        stomp_status_set(&error, STOMP_FAILURE, "not enough memory");
         return APR_ENOMEM;
+    }
 
     // Parse the frame out.
     {
@@ -379,7 +422,7 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection,
         // Parse the command.
         rc = stomp_read_line(connection, &p, &length, pool);
         if (rc != APR_SUCCESS) {
-            return rc; 
+            goto err_exit;
         }
 
         f->command = p;
@@ -388,7 +431,7 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection,
         while (1) {
             rc = stomp_read_line(connection, &p, &length, pool);
             if (rc != APR_SUCCESS) { 
-                return rc; 
+                goto err_exit;
             }
             
             if (debug) {
@@ -407,6 +450,7 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection,
 
                 p2 = strstr(p, ":");
                 if (p2 == NULL) {
+                    stomp_status_set(&error, STOMP_FAILURE, "protocol error");
                     // Expected at 1 : to delimit the key from the value.
                     return APR_EGENERAL;
                 }
@@ -435,16 +479,18 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection,
                 f->body = apr_pcalloc(pool, f->body_length);
                 rc = apr_socket_recv(connection->socket, f->body, &f->body_length);
                 if (rc != APR_SUCCESS) { 
-                    return rc; 
+                    goto err_exit;
                 }
 
                 // Expect a \n after the end
                 rc = apr_socket_recv(connection->socket, endbuffer, &len_receive);
                 if (rc != APR_SUCCESS) { 
-                    return rc; 
+                    goto err_exit;
                 }
-                if (len_receive != 2 || endbuffer[0] != '\0' || endbuffer[1] != '\n')
+                if (len_receive != 2 || endbuffer[0] != '\0' || endbuffer[1] != '\n') {
+                    stomp_status_set(&error, STOMP_FAILURE, "protocol error");
                     return APR_EGENERAL;
+                }
             } else {
                 // The remainder of the buffer (including the \n at the end) is the body)
                 rc = stomp_read_buffer(connection, &f->body, &f->body_length, 
@@ -456,7 +502,7 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection,
                 }
                 
                 if (rc != APR_SUCCESS) { 
-                    return rc; 
+                    goto err_exit;
                 }
             }
         }
@@ -465,6 +511,11 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection,
 
     *frame = f;
     return APR_SUCCESS;
+    
+    err_exit:
+    set_error(rc, "unable to read data: %s");
+    
+    return rc;
 }
 
 
@@ -483,7 +534,7 @@ bool stomp_io_can_read(stomp_connection *connection) {
         return false;
     }
     
-    // TODO: handle this better
-    fprintf(stderr, "Warning: unhandled error trying to read from the socket\n");
+    stomp_status_set(&error, STOMP_FAILURE, 
+                     "unhandled error trying to read from the socket");
     return false;
 }

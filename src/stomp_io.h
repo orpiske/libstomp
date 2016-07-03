@@ -44,6 +44,7 @@
 
 #include "stomp_connection.h"
 #include "stomp_frame.h"
+#include "stomp_status.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -83,6 +84,11 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection, stomp_frame *
  */
 bool stomp_io_can_read(stomp_connection *connection);
 
+/**
+ * Gets the last stomp engine status
+ * @return The last status 
+ */
+stomp_status_t stomp_io_last_status();
 
 #ifdef __cplusplus
 }
