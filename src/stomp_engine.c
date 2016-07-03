@@ -84,18 +84,6 @@ APR_DECLARE(apr_status_t) stomp_engine_connect(stomp_connection **connection_ref
     }
     
     
-    rc = apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 1);
-    if (rc != APR_SUCCESS) {
-        char msgbuf[80] = {0};
-        
-        apr_strerror(rc, msgbuf, sizeof(msgbuf));
-        
-        stomp_status_set(&error, STOMP_FAILURE, 
-                         "unable to set socket options: %s", 
-                         hostname, msgbuf);
-        return rc; 
-    }
-     
     rc = apr_socket_connect(connection->socket, connection->remote_sa);
     if (rc != APR_SUCCESS && !APR_STATUS_IS_EAGAIN(rc)) { 
         char msgbuf[80] = {0};
@@ -105,6 +93,19 @@ APR_DECLARE(apr_status_t) stomp_engine_connect(stomp_connection **connection_ref
         stomp_status_set(&error, STOMP_FAILURE, 
                          "unable to connect: %s", 
                          msgbuf);
+        return rc; 
+    }
+    
+    
+    rc = apr_socket_opt_set(connection->socket, APR_SO_NONBLOCK, 1);
+    if (rc != APR_SUCCESS) {
+        char msgbuf[80] = {0};
+        
+        apr_strerror(rc, msgbuf, sizeof(msgbuf));
+        
+        stomp_status_set(&error, STOMP_FAILURE, 
+                         "unable to set socket options: %s", 
+                         hostname, msgbuf);
         return rc; 
     }
     
