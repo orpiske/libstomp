@@ -429,7 +429,7 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection,
                                                 APR_HASH_KEY_STRING);
             if (content_length) {
                 char endbuffer[2];
-                apr_size_t length = 2;
+                apr_size_t len_receive = 2;
 
                 f->body_length = apr_atoi64(content_length);
                 f->body = apr_pcalloc(pool, f->body_length);
@@ -439,11 +439,11 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection,
                 }
 
                 // Expect a \n after the end
-                rc = apr_socket_recv(connection->socket, endbuffer, &length);
+                rc = apr_socket_recv(connection->socket, endbuffer, &len_receive);
                 if (rc != APR_SUCCESS) { 
                     return rc; 
                 }
-                if (length != 2 || endbuffer[0] != '\0' || endbuffer[1] != '\n')
+                if (len_receive != 2 || endbuffer[0] != '\0' || endbuffer[1] != '\n')
                     return APR_EGENERAL;
             } else {
                 // The remainder of the buffer (including the \n at the end) is the body)
