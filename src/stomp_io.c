@@ -379,7 +379,6 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection,
         // Parse the command.
         rc = stomp_read_line(connection, &p, &length, pool);
         if (rc != APR_SUCCESS) {
-            fprintf(stderr, "Failed or no data???");
             return rc; 
         }
 
