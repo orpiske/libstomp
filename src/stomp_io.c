@@ -375,10 +375,11 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection,
     {
         char *p;
         int length;
-
+        
         // Parse the command.
         rc = stomp_read_line(connection, &p, &length, pool);
-        if (rc != APR_SUCCESS) { 
+        if (rc != APR_SUCCESS) {
+            fprintf(stderr, "Failed or no data???");
             return rc; 
         }
 
@@ -465,4 +466,14 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection,
 
     *frame = f;
     return APR_SUCCESS;
+}
+
+
+bool stomp_io_can_read(stomp_connection *connection) {
+    apr_status_t rc = apr_wait_for_io_or_timeout(NULL, connection->socket, 0);
+    if (rc != APR_TIMEUP) {
+        return false;
+    }
+    
+    return true;
 }

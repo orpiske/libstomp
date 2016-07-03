@@ -27,17 +27,20 @@
 #include <apr-1.0/apr_hash.h>
 #include <apr-1.0/apr_env.h>
 #include <apr-1.0/apr_strings.h>
+#include <apr-1.0/apr_support.h>
 #else
 #include <apr-1/apr_general.h>
 #include <apr-1/apr_network_io.h>
 #include <apr-1/apr_hash.h>
 #include <apr-1/apr_env.h>
 #include <apr-1/apr_strings.h>
+#include <apr-1/apr_support.h>
 #endif // defined(__DEBIAN_DISTRO__) || defined(__UBUNTU_DISTRO__)
 
 
 
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "stomp_connection.h"
 #include "stomp_frame.h"
@@ -71,6 +74,14 @@ APR_DECLARE(apr_status_t) stomp_write(stomp_connection *connection, stomp_frame 
  * @return 
  */
 APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection, stomp_frame **frame, apr_pool_t *pool);
+
+/**
+ * Lower level check that returns whether there's data to be read from the 
+ * connection
+ * @param connection
+ * @return true if there's data to read or false otherwise
+ */
+bool stomp_io_can_read(stomp_connection *connection);
 
 
 #ifdef __cplusplus
