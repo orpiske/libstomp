@@ -20,7 +20,8 @@
  * 
  * This file, itself, was renamed from stomp.c to stomp_engine.h. Additionally
  * the contents of this file were modified in order to match the project 
- * formatting guidelines.
+ * formatting guidelines. Also replaced the CHECK_SUCCESS macro with regular 
+ * code.
  */
 
 #include "stomp_engine.h"
@@ -40,38 +41,52 @@ APR_DECLARE(apr_status_t) stomp_engine_connect(stomp_connection **connection_ref
     // Allocate the connection and a memory pool for the connection.
     //
     connection = apr_pcalloc(pool, sizeof (stomp_connection));
-    if (connection == NULL)
+    if (connection == NULL) {
         return APR_ENOMEM;
-
-#define CHECK_SUCCESS if( rc!=APR_SUCCESS ) { return rc; }
+    }
 
     // Look up the remote address
     rc = apr_sockaddr_info_get(&connection->remote_sa, hostname, APR_UNSPEC, port, 0, pool);
-    CHECK_SUCCESS;
+    if (rc != APR_SUCCESS) { 
+        return rc; 
+    }
 
     // Create and Connect the socket.
     socket_family = connection->remote_sa->sa.sin.sin_family;
     rc = apr_socket_create(&connection->socket, socket_family, SOCK_STREAM, APR_PROTO_TCP, pool);
-    CHECK_SUCCESS;
+    if (rc != APR_SUCCESS) { 
+        return rc; 
+    }
+    
     rc = apr_socket_connect(connection->socket, connection->remote_sa);
-    CHECK_SUCCESS;
+    if (rc != APR_SUCCESS) { 
+        return rc; 
+    }
 
     // Get the Socket Info
     rc = apr_socket_addr_get(&connection->remote_sa, APR_REMOTE, connection->socket);
-    CHECK_SUCCESS;
+    if (rc != APR_SUCCESS) { 
+        return rc; 
+    }
+    
     //rc = apr_sockaddr_ip_get(&connection->remote_ip, connection->remote_sa);
     //CHECK_SUCCESS;
+    
     connection->remote_ip = connection->remote_sa->hostname;
     rc = apr_socket_addr_get(&connection->local_sa, APR_LOCAL, connection->socket);
-    CHECK_SUCCESS;
+    if (rc != APR_SUCCESS) { 
+        return rc; 
+    }
+    
     rc = apr_sockaddr_ip_get(&connection->local_ip, connection->local_sa);
-    CHECK_SUCCESS;
+    if (rc != APR_SUCCESS) { 
+        return rc; 
+    }
 
     // Set socket options.
     //	rc = apr_socket_timeout_set( connection->socket, 2*APR_USEC_PER_SEC);
     //	CHECK_SUCCESS;
 
-#undef CHECK_SUCCESS
 
     *connection_ref = connection;
     return rc;
