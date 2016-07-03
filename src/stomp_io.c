@@ -74,13 +74,14 @@ APR_DECLARE(apr_status_t) stomp_read_line(stomp_connection *connection, char **d
 
     while (1) {
 
-        apr_size_t length = 1;
-        apr_status_t rc = apr_socket_recv(connection->socket, tail->data + i, &length);
+        apr_size_t len_receive = 1;
+        apr_status_t rc = apr_socket_recv(connection->socket, tail->data + i, 
+                                          &len_receive);
         if( rc!= APR_SUCCESS) { 
            goto err_exit;
         }
 
-        if (length == 1) {
+        if (len_receive == 1) {
             i++;
             bytesRead++;
 
