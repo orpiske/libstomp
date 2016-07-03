@@ -26,11 +26,13 @@
 #include <apr-1.0/apr_network_io.h>
 #include <apr-1.0/apr_hash.h>
 #include <apr-1.0/apr_env.h>
+#include <apr-1.0/apr_strings.h>
 #else
 #include <apr-1/apr_general.h>
 #include <apr-1/apr_network_io.h>
 #include <apr-1/apr_hash.h>
 #include <apr-1/apr_env.h>
+#include <apr-1/apr_strings.h>
 #endif // defined(__DEBIAN_DISTRO__) || defined(__UBUNTU_DISTRO__)
 
 
