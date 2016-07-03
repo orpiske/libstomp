@@ -18,6 +18,8 @@
 
 #include "stomp_status.h"
 
+#include <string.h>
+
 
 #ifdef __cplusplus
 extern "C" {
