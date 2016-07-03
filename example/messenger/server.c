@@ -45,12 +45,12 @@ int main(int argc, char **argv) {
         
         goto failure_without_message;
     }
-       
+    
     
     /*
      * Connects to the endpoint
      */
-    stat = stomp_connect(messenger, NULL);
+    stat = stomp_connect(messenger, NULL, 10000);
     if (stat != STOMP_SUCCESS) {
         fprintf(stderr, "%s\n", messenger->status.message);
         

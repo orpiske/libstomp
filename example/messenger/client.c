@@ -51,7 +51,7 @@ int main(int argc, char **argv)
     /*
      * Connects to the endpoint
      */
-    stat = stomp_connect(messenger, NULL);
+    stat = stomp_connect(messenger, NULL, 1000);
     if (stat != STOMP_SUCCESS) {
         fprintf(stderr, "%s\n", messenger->status.message);
 
