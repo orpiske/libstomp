@@ -32,6 +32,12 @@ static void terminate()
     apr_terminate();
 }
 
+static void check_status(apr_status_t rc, const char *message) {
+    if (rc != APR_SUCCESS) {
+        die(-2, message, rc);
+    }
+}
+
 int main(int argc, char *argv[])
 {
     apr_status_t rc;
@@ -41,15 +47,17 @@ int main(int argc, char *argv[])
     setbuf(stdout, NULL);
 
     rc = apr_initialize();
-    rc == APR_SUCCESS || die(-2, "Could not initialize", rc);
+    check_status(rc, "Could not initialize");
+        
     atexit(terminate);
 
     rc = apr_pool_create(&pool, NULL);
-    rc == APR_SUCCESS || die(-2, "Could not allocate pool", rc);
+    check_status(rc, "Could not allocate pool");
 
     fprintf(stdout, "Connecting......");
     rc = stomp_engine_connect(&connection, "localhost", 61613, pool);
-    rc == APR_SUCCESS || die(-2, "Could not connect", rc);
+    check_status(rc, "Could not connect");
+    
     fprintf(stdout, "OK\n");
 
     fprintf(stdout, "Sending connect message.");
@@ -62,14 +70,16 @@ int main(int argc, char *argv[])
         frame.body = NULL;
         frame.body_length = -1;
         rc = stomp_write(connection, &frame, pool);
-        rc == APR_SUCCESS || die(-2, "Could not send frame", rc);
+        check_status(rc, "Could not send frame");
+        
     }
     fprintf(stdout, "OK\n");
     fprintf(stdout, "Reading Response.");
     {
         stomp_frame *frame;
         rc = stomp_read(connection, &frame, pool);
-        rc == APR_SUCCESS || die(-2, "Could not read frame", rc);
+        check_status(rc, "Could not read frame");
+        
         fprintf(stdout, "Response: %s, %s\n", frame->command, frame->body);
     }
     fprintf(stdout, "OK\n");
@@ -84,7 +94,7 @@ int main(int argc, char *argv[])
         frame.body_length = -1;
         frame.body = "This is the message";
         rc = stomp_write(connection, &frame, pool);
-        rc == APR_SUCCESS || die(-2, "Could not send frame", rc);
+        check_status(rc, "Could not send frame");
     }
     fprintf(stdout, "OK\n");
 
@@ -92,7 +102,7 @@ int main(int argc, char *argv[])
 
     fprintf(stdout, "Disconnecting...");
     rc = stomp_engine_disconnect(&connection);
-    rc == APR_SUCCESS || die(-2, "Could not disconnect", rc);
+    check_status(rc, "Could not disconnect");
     fprintf(stdout, "OK\n");
 
     apr_pool_destroy(pool);
