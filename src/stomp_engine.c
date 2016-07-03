@@ -83,13 +83,13 @@ APR_DECLARE(apr_status_t) stomp_engine_connect(stomp_connection **connection_ref
         return rc; 
     }
 
-    // Set socket options.
-    //	rc = apr_socket_timeout_set( connection->socket, 2*APR_USEC_PER_SEC);
-    //	CHECK_SUCCESS;
-
-
     *connection_ref = connection;
     return rc;
+}
+
+APR_DECLARE(apr_status_t) stomp_engine_set_timeout(stomp_connection *connection,
+                                                    apr_int64_t timeout) {
+    return apr_socket_timeout_set(connection->socket, timeout);
 }
 
 APR_DECLARE(apr_status_t) stomp_engine_disconnect(stomp_connection **connection_ref)

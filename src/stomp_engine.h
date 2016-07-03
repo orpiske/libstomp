@@ -67,6 +67,16 @@ APR_DECLARE(apr_status_t) stomp_engine_connect(stomp_connection **connection_ref
 
 
 /**
+ * Sets blocking mode
+ * @param connection_ref
+ * @param timeout in microseconds
+ * @return 
+ */
+APR_DECLARE(apr_status_t) stomp_engine_set_timeout(stomp_connection *connection,
+                                                    apr_int64_t timeout);
+
+
+/**
  * Disconnects from the broker using the low level connection engine
  * @param connection_ref
  * @param hostname

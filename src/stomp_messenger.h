@@ -70,6 +70,16 @@ void stomp_messenger_destroy(stomp_messenger_t **messenger);
 
 
 /**
+ * Sets the timeout for messenger communication. The value set also applies to 
+ * receipt messages
+ * @return A messenger object that can be used to exchange data via STOMP
+ * @param timeout the timeout in milliseconds
+ */
+void stomp_messenger_set_timeout(stomp_messenger_t *messenger, 
+                                              int32_t timeout);
+
+
+/**
  * Sets the communication endpoint for the message exchange.
  * @param messenger An instance of the messenger object
  * @param uri A connection uri in the stomp://[user]:[password]@<hostname>:<port>/<endpoint address>
@@ -87,12 +97,14 @@ stomp_status_code_t stomp_set_endpoint(stomp_messenger_t *messenger,
  * @param header A pointer to an instance of the appropriate header object for 
  * the given exchange. The instance of the object must contain the required 
  * frame headers as expected by the frame.
+ * @param timeout the timeout in milliseconds
  * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure, 
  * the code will set the error details on the status member of the messenger 
  * object
  */
 stomp_status_code_t stomp_connect(stomp_messenger_t *messenger, 
-                                  stomp_connection_header_t *header);
+                                  stomp_connection_header_t *header,
+                                  int32_t timeout);
 
 
 /**

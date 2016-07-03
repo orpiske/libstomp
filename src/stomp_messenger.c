@@ -83,6 +83,12 @@ void stomp_messenger_destroy(stomp_messenger_t **messenger)
     apr_terminate();
 }
 
+void stomp_messenger_set_timeout(stomp_messenger_t *messenger, 
+                                              int32_t timeout)
+{
+    stomp_engine_set_timeout(messenger->connection, apr_time_from_msec(timeout));
+}
+
 stomp_status_code_t stomp_set_endpoint(stomp_messenger_t *messenger, const char *uri)
 {
     //fprintf(stderr, "Parsing URI: %s\n", uri);
@@ -115,7 +121,7 @@ stomp_status_code_t stomp_set_endpoint(stomp_messenger_t *messenger, const char 
 }
 
 stomp_status_code_t stomp_connect(stomp_messenger_t *messenger,
-        stomp_connection_header_t *header)
+        stomp_connection_header_t *header, int32_t timeout)
 {
     stomp_frame conn_frame;
     
@@ -130,6 +136,8 @@ stomp_status_code_t stomp_connect(stomp_messenger_t *messenger,
 
         return STOMP_FAILURE;
     }
+    
+    stomp_messenger_set_timeout(messenger, timeout);
 
     conn_frame.command = "CONNECT";
     conn_frame.headers = apr_hash_make(messenger->pool);
@@ -163,6 +171,13 @@ stomp_status_code_t stomp_connect(stomp_messenger_t *messenger,
 
         return STOMP_FAILURE;
     }
+    
+    if (!stomp_io_can_read(messenger->connection)) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE,
+                "Timed out while trying to read data");
+
+        return STOMP_FAILURE;
+    }
 
 
     stomp_frame *reply_frame;
@@ -189,6 +204,13 @@ stomp_status_code_t stomp_connect(stomp_messenger_t *messenger,
 static stomp_status_code_t stomp_process_receipt(stomp_messenger_t *messenger) {
     fprintf(stderr, "Waiting for receipt\n");
     const char *DISCONN_REPLY_STR = "RECEIPT";
+    
+    if (!stomp_io_can_read(messenger->connection)) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE,
+                "Timed out while trying to read data");
+
+        return STOMP_FAILURE;
+    }
 
     stomp_frame *reply_frame;
     apr_status_t stat = stomp_read(messenger->connection, &reply_frame, messenger->pool);
@@ -504,6 +526,13 @@ stomp_status_code_t stomp_receive(stomp_messenger_t *messenger,
                                   stomp_message_t *message)
 {
     stomp_frame *frame;
+       
+    if (!stomp_io_can_read(messenger->connection)) {
+        stomp_status_set(&messenger->status, STOMP_FAILURE,
+                "Timed out while trying to read data");
+
+        return STOMP_FAILURE;
+    }
     
     apr_status_t stat = stomp_read(messenger->connection, &frame, messenger->pool);
     if (stat == APR_SUCCESS) {
@@ -518,6 +547,10 @@ stomp_status_code_t stomp_receive(stomp_messenger_t *messenger,
         return STOMP_FAILURE;
     }
     else {
+        if (stat == APR_TIMEUP) {
+            return STOMP_SUCCESS;
+        }
+        
         stomp_status_set(&messenger->status, STOMP_FAILURE,
                 "Unable to read the frame data to the underlying connection");
 

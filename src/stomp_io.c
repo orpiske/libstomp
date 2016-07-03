@@ -470,10 +470,22 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection,
 
 
 bool stomp_io_can_read(stomp_connection *connection) {
-    apr_status_t rc = apr_wait_for_io_or_timeout(NULL, connection->socket, 0);
-    if (rc != APR_TIMEUP) {
+    fprintf(stdout, "Waiting for read\n");
+    // From APR documentation: setting the 3rd parameter as non-zero means 
+    // for reading. 
+    apr_status_t rc = apr_wait_for_io_or_timeout(NULL, connection->socket, 1);
+    
+    if (rc == APR_SUCCESS) {
+        return true;
+    }
+    
+    
+    if (rc == APR_TIMEUP) {
+        fprintf(stdout, "Time up!\n");
         return false;
     }
     
-    return true;
+    // TODO: handle this better
+    fprintf(stderr, "Warning: unhandled error trying to read from the socket\n");
+    return false;
 }
