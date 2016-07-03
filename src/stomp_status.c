@@ -19,16 +19,18 @@ void stomp_status_set(stomp_status_t *status, stomp_status_code_t code,
         const char *message, ...) 
 {
     va_list ap;
-    char *ret = NULL; // This needs to free'd later
-
+    
+    if (status->message != NULL) {
+        stomp_status_reset(status);
+    }
+    
     if (message != NULL) {
         va_start(ap, message);
-        vasprintf(&ret, message, ap);
+        vasprintf(&status->message, message, ap);
         va_end(ap);
     }
     
     status->code = code;
-    status->message = message;
 }
 
 void stomp_status_reset(stomp_status_t *status) {
