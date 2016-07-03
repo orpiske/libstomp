@@ -48,8 +48,17 @@ stomp_messenger_t *stomp_messenger_init()
         return ret;
     }
 
-    ret->exchange_properties = apr_hash_make(ret->pool);
+    ret->exchange_properties = malloc(sizeof(stomp_exchange_properties_t));
     if (!ret->exchange_properties) {
+        stomp_status_set(&ret->status, STOMP_FAILURE,
+                "Unable to initialize the outer exchange properties structure");
+
+        return ret;
+    }
+
+    
+    ret->exchange_properties->hash = (apr_hash_t *) apr_hash_make(ret->pool);
+    if (!ret->exchange_properties->hash) {
         stomp_status_set(&ret->status, STOMP_FAILURE,
                 "Unable to initialize the exchange properties structure");
 
@@ -61,6 +70,8 @@ stomp_messenger_t *stomp_messenger_init()
 
 void stomp_messenger_destroy(stomp_messenger_t **messenger)
 {
+    free((*messenger)->exchange_properties);
+    
     if ((*messenger) != NULL) { 
         apr_pool_destroy((*messenger)->pool);
     }
@@ -454,7 +465,7 @@ stomp_status_code_t stomp_send(stomp_messenger_t *messenger,
 {
     stomp_frame frame;
     frame.command = "SEND";
-    frame.headers = apr_hash_copy(messenger->pool, messenger->exchange_properties);
+    frame.headers = apr_hash_copy(messenger->pool, messenger->exchange_properties->hash);
     
     
     apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING, 
@@ -495,8 +506,8 @@ stomp_status_code_t stomp_receive(stomp_messenger_t *messenger,
     apr_status_t stat = stomp_read(messenger->connection, &frame, messenger->pool);
     if (stat == APR_SUCCESS) {
         stomp_message_format(message, frame->body, frame->body_length);
-        messenger->exchange_properties = apr_hash_overlay(messenger->pool, 
-                frame->headers, messenger->exchange_properties);
+        messenger->exchange_properties->hash = apr_hash_overlay(messenger->pool, 
+                frame->headers, messenger->exchange_properties->hash);
         
         if (strncmp(frame->command, "MESSAGE", strlen("MESSAGE")) == 0) {
             return STOMP_SUCCESS;

@@ -20,20 +20,20 @@ void
 stomp_exchange_add(stomp_exchange_properties_t *properties,
         const char *name, const char *value)
 {
-    apr_hash_set((apr_hash_t *) properties, name, APR_HASH_KEY_STRING, value);
+    apr_hash_set((apr_hash_t *) properties->hash, name, APR_HASH_KEY_STRING, value);
 }
 
 const char *
 stomp_exchange_get(stomp_exchange_properties_t *properties,
         const char *name)
 {
-    return apr_hash_get((apr_hash_t *) properties, name, APR_HASH_KEY_STRING);
+    return apr_hash_get((apr_hash_t *) properties->hash, name, APR_HASH_KEY_STRING);
 }
 
 void
 stomp_exchange_clear(stomp_exchange_properties_t *properties)
 {
-    apr_hash_clear((apr_hash_t *) properties);
+    apr_hash_clear((apr_hash_t *) properties->hash);
 }
 
 stomp_status_code_t
@@ -41,7 +41,7 @@ stomp_exchange_util_ctime(stomp_exchange_properties_t *properties,
                           stomp_status_t *stat)
 {
     apr_time_t now = apr_time_now();
-    apr_pool_t *pool =  apr_hash_pool_get((apr_hash_t *) properties);
+    apr_pool_t *pool =  apr_hash_pool_get((apr_hash_t *) properties->hash);
     
     if (!pool) {
         if (stat) {
