@@ -45,6 +45,7 @@ APR_DECLARE(apr_status_t) stomp_write_buffer(stomp_connection *connection, const
     return APR_SUCCESS;
 }
 
+
 APR_DECLARE(apr_status_t) stomp_read_line(stomp_connection *connection, char **data, int* length, apr_pool_t *pool)
 {
     apr_pool_t *tpool;
@@ -60,16 +61,21 @@ APR_DECLARE(apr_status_t) stomp_read_line(stomp_connection *connection, char **d
     }
 
     head = tail = apr_pcalloc(tpool, sizeof (data_block_list));
-    if (head == NULL)
+    if (head == NULL) {
         return APR_ENOMEM;
-
-#define CHECK_SUCCESS if( rc!=APR_SUCCESS ) { apr_pool_destroy(tpool); return rc; }
+    }
+    
+    if( rc!= APR_SUCCESS) { 
+        goto err_exit;
+    }
 
     while (1) {
 
         apr_size_t length = 1;
         apr_status_t rc = apr_socket_recv(connection->socket, tail->data + i, &length);
-        CHECK_SUCCESS;
+        if( rc!= APR_SUCCESS) { 
+           goto err_exit;
+        }
 
         if (length == 1) {
             i++;
@@ -99,7 +105,6 @@ APR_DECLARE(apr_status_t) stomp_read_line(stomp_connection *connection, char **d
         }
     }
 
-#undef CHECK_SUCCESS
     // Now we have the whole frame and know how big it is.  Allocate it's buffer
     *data = apr_pcalloc(pool, bytesRead);
     p = *data;
@@ -119,6 +124,10 @@ APR_DECLARE(apr_status_t) stomp_read_line(stomp_connection *connection, char **d
 
     apr_pool_destroy(tpool);
     return APR_SUCCESS;
+    
+    err_exit: 
+    apr_pool_destroy(tpool);
+    return rc;
 }
 
 APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection, 
@@ -145,17 +154,22 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection,
     }
 
     head = tail = apr_pcalloc(tpool, sizeof (data_block_list));
-    if (head == NULL)
+    if (head == NULL) {
         return APR_ENOMEM;
-
-#define CHECK_SUCCESS if( rc!=APR_SUCCESS ) { apr_pool_destroy(tpool); return rc; }
+    }
+    
+    if( rc != APR_SUCCESS) { 
+        goto err_exit;
+    }
 
     // Keep reading bytes till end of frame is encountered.
     while (1) {
 
         apr_size_t length = 1;
         apr_status_t rc = apr_socket_recv(connection->socket, tail->data + i, &length);
-        CHECK_SUCCESS;
+        if( rc != APR_SUCCESS) { 
+           goto err_exit;
+        }
         
         
         if (length == 1) {
@@ -167,7 +181,10 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection,
                 char endline[1];
                 // We expect a newline after the null.
                 apr_socket_recv(connection->socket, endline, &length);
-                CHECK_SUCCESS;
+                if( rc != APR_SUCCESS) { 
+                    goto err_exit;
+                }
+                
                 if (endline[0] != '\n') {
                     return APR_EGENERAL;
                 }
@@ -190,7 +207,7 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection,
     if (debug) {
         fprintf(stdout, "Tail data: %s\n", tail->data);
     }
-#undef CHECK_SUCCESS
+
     
     (*body_len) = bytesRead;
 
@@ -221,6 +238,10 @@ APR_DECLARE(apr_status_t) stomp_read_buffer(stomp_connection *connection,
 
     apr_pool_destroy(tpool);
     return APR_SUCCESS;
+    
+    err_exit:
+    apr_pool_destroy(tpool); 
+    return rc;
 }
 
 /********************************************************************************
@@ -236,9 +257,15 @@ APR_DECLARE(apr_status_t) stomp_write(stomp_connection *connection, stomp_frame 
 #define CHECK_SUCCESS if( rc!=APR_SUCCESS ) { return rc; }
     // Write the command.
     rc = stomp_write_buffer(connection, frame->command, strlen(frame->command));
-    CHECK_SUCCESS;
+    if (rc != APR_SUCCESS) { 
+        return rc; 
+    }
+    
+    
     rc = stomp_write_buffer(connection, "\n", 1);
-    CHECK_SUCCESS;
+    if (rc != APR_SUCCESS) { 
+        return rc; 
+    }
 
     // Write the headers
     if (frame->headers != NULL) {
@@ -250,13 +277,23 @@ APR_DECLARE(apr_status_t) stomp_write(stomp_connection *connection, stomp_frame 
             apr_hash_this(i, &key, NULL, &value);
 
             rc = stomp_write_buffer(connection, key, strlen(key));
-            CHECK_SUCCESS;
+            if (rc != APR_SUCCESS) { 
+                return rc; 
+            }
+            
             rc = stomp_write_buffer(connection, ":", 1);
-            CHECK_SUCCESS;
+            if (rc != APR_SUCCESS) { 
+                return rc; 
+            }
             rc = stomp_write_buffer(connection, value, strlen(value));
-            CHECK_SUCCESS;
+            if (rc != APR_SUCCESS) { 
+                return rc; 
+            }
+            
             rc = stomp_write_buffer(connection, "\n", 1);
-            CHECK_SUCCESS;
+            if (rc != APR_SUCCESS) { 
+                return rc; 
+            }
         }
 
         if (frame->body_length >= 0) {
@@ -265,22 +302,31 @@ APR_DECLARE(apr_status_t) stomp_write(stomp_connection *connection, stomp_frame 
 
             apr_pool_create(&length_pool, pool);
             rc = stomp_write_buffer(connection, "content-length:", 15);
-            CHECK_SUCCESS;
+            if (rc != APR_SUCCESS) { 
+                return rc; 
+            }
 
             int body_length = frame->body_length;
             if (body_length <= 0 && frame->body != NULL)
                 body_length = strlen(frame->body) + 1;
             length_string = apr_itoa(length_pool, body_length);
             rc = stomp_write_buffer(connection, length_string, strlen(length_string));
-            CHECK_SUCCESS;
+            if (rc != APR_SUCCESS) { 
+                return rc; 
+            }
+            
             rc = stomp_write_buffer(connection, "\n", 1);
-            CHECK_SUCCESS;
+            if (rc != APR_SUCCESS) { 
+                return rc; 
+            }
 
             apr_pool_destroy(length_pool);
         }
     }
     rc = stomp_write_buffer(connection, "\n", 1);
-    CHECK_SUCCESS;
+    if (rc != APR_SUCCESS) { 
+        return rc; 
+    }
 
     // Write the body.
     if (frame->body != NULL) {
@@ -288,12 +334,14 @@ APR_DECLARE(apr_status_t) stomp_write(stomp_connection *connection, stomp_frame 
         if (body_length <= 0)
             body_length = strlen(frame->body) + 1;
         rc = stomp_write_buffer(connection, frame->body, body_length);
-        CHECK_SUCCESS;
+        if (rc != APR_SUCCESS) { 
+            return rc; 
+        }
     }
     rc = stomp_write_buffer(connection, "\0\n", 2);
-    CHECK_SUCCESS;
-
-#undef CHECK_SUCCESS
+    if (rc != APR_SUCCESS) { 
+        return rc; 
+    }
 
     return APR_SUCCESS;
 }
@@ -312,8 +360,6 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection,
         debug = NULL;
     }
         
-#define CHECK_SUCCESS if( rc!=APR_SUCCESS ) { return rc; }
-
     f = apr_pcalloc(pool, sizeof (stomp_frame));
     if (f == NULL)
         return APR_ENOMEM;
@@ -329,14 +375,18 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection,
 
         // Parse the command.
         rc = stomp_read_line(connection, &p, &length, pool);
-        CHECK_SUCCESS;
+        if (rc != APR_SUCCESS) { 
+            return rc; 
+        }
 
         f->command = p;
         
         // Start parsing the headers.
         while (1) {
             rc = stomp_read_line(connection, &p, &length, pool);
-            CHECK_SUCCESS;
+            if (rc != APR_SUCCESS) { 
+                return rc; 
+            }
             
             if (debug) {
                 fprintf(stdout, "Parsing (%s): %s\n", f->command, p);
@@ -381,11 +431,15 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection,
                 f->body_length = apr_atoi64(content_length);
                 f->body = apr_pcalloc(pool, f->body_length);
                 rc = apr_socket_recv(connection->socket, f->body, &f->body_length);
-                CHECK_SUCCESS;
+                if (rc != APR_SUCCESS) { 
+                    return rc; 
+                }
 
                 // Expect a \n after the end
                 rc = apr_socket_recv(connection->socket, endbuffer, &length);
-                CHECK_SUCCESS;
+                if (rc != APR_SUCCESS) { 
+                    return rc; 
+                }
                 if (length != 2 || endbuffer[0] != '\0' || endbuffer[1] != '\n')
                     return APR_EGENERAL;
             } else {
@@ -398,12 +452,14 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection,
                            f->body);
                 }
                 
-                CHECK_SUCCESS;
+                if (rc != APR_SUCCESS) { 
+                    return rc; 
+                }
             }
         }
     }
 
-#undef CHECK_SUCCESS
+
     *frame = f;
     return APR_SUCCESS;
 }
