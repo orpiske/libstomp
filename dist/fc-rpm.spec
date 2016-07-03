@@ -4,7 +4,7 @@
 Summary:            A client library for the STOMP messaging protocol
 Name:               litestomp
 Version:            0.0.1
-Release:            1%{?dist}
+Release:            2%{?dist}
 License:            Apache-2.0
 Summary:            C library used to talk the Stomp 
 Group:              Development/Tools
