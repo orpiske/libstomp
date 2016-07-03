@@ -46,6 +46,7 @@
 #include "stomp_connection.h"
 #include "stomp_frame.h"
 #include "stomp_io.h"
+#include "stomp_status.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -87,6 +88,11 @@ APR_DECLARE(apr_status_t) stomp_engine_set_timeout(stomp_connection *connection,
 APR_DECLARE(apr_status_t) stomp_engine_disconnect(stomp_connection **connection_ref);
 
 
+/**
+ * Gets the last stomp engine status
+ * @return The last status 
+ */
+stomp_status_t stomp_engine_last_status();
 
 #ifdef __cplusplus
 }

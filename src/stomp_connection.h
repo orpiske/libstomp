@@ -40,7 +40,7 @@
 extern "C"
 {
 #endif
-
+    
 /**
  * Stomp connection reference object
  * @internal

@@ -131,8 +131,11 @@ stomp_status_code_t stomp_connect(stomp_messenger_t *messenger,
             messenger->uri.hostname, messenger->uri.port, messenger->pool);
     
     if (stat != APR_SUCCESS) {
+        stomp_status_t engine_status = stomp_engine_last_status();
+        
         stomp_status_set(&messenger->status, STOMP_FAILURE,
-                "Unable to connect to the broker service");
+                "Unable to connect to the broker service: %s", 
+                         engine_status.message);
 
         return STOMP_FAILURE;
     }
