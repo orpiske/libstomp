@@ -73,6 +73,8 @@ void stomp_messenger_destroy(stomp_messenger_t **messenger)
 {
     free((*messenger)->exchange_properties);
     
+    stomp_status_reset(&(*messenger)->status);
+    
     if ((*messenger) != NULL) { 
         apr_pool_destroy((*messenger)->pool);
     }
