@@ -36,6 +36,7 @@ stomp_messenger_t *stomp_messenger_init()
     }
 
     ret->connection = NULL;
+    ret->status.message = NULL;
     stomp_status_success(&ret->status);
     
     status = apr_pool_create(&ret->pool, NULL);
