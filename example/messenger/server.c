@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
      * Subscribes to the endpoint. Uses a fake ID and receipt just for the sake
      * of the example
      */
-    stomp_subscription_header_t sub_header;
+    stomp_subscription_header_t sub_header = {0};
     
     sub_header.id = 1;
     sub_header.receipt = 123;
@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
     /**
      * And a receive header
      */
-    stomp_receive_header_t receive_header; 
+    stomp_receive_header_t receive_header = {0}; 
     
     stat = stomp_receive(messenger, &receive_header, message);
     if (stat != STOMP_SUCCESS) {

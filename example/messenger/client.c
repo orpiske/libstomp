@@ -76,7 +76,7 @@ int main(int argc, char **argv)
     char *text = "HIGH LEVEL API TEST";
     stomp_message_format(message, text, strlen(text));
 
-    stomp_send_header_t send_header;
+    stomp_send_header_t send_header = {0};
 
     send_header.transaction_id = -1;
     send_header.receipt = 124;
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
     /*
      * Disconnects from the broker after receiving the receipt response
      */
-    stomp_disconnection_header_t disconn;
+    stomp_disconnection_header_t disconn = {0};
     disconn.receipt = 124;
     stat = stomp_disconnect(messenger, &disconn);
     if (stat != STOMP_SUCCESS) {
