@@ -520,7 +520,6 @@ APR_DECLARE(apr_status_t) stomp_read(stomp_connection *connection,
 
 
 bool stomp_io_can_read(stomp_connection *connection) {
-    fprintf(stdout, "Waiting for read\n");
     // From APR documentation: setting the 3rd parameter as non-zero means 
     // for reading. 
     apr_status_t rc = apr_wait_for_io_or_timeout(NULL, connection->socket, 1);
