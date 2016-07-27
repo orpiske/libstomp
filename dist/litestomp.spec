@@ -24,10 +24,13 @@ protocol that can be used to talk to message brokers such as Apace ActiveMQ.
 
 
 %package devel
+Summary:            STOMP client library development kit
 Requires:           litestomp
+Group:              Development/Libraries
+
 
 %description devel
-STOMP client library development kit
+Development packages for the STOMP client library
 
 
 %prep
