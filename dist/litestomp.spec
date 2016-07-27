@@ -22,6 +22,14 @@ Requires:           apr-util
 This library implements a simple STOMP, a text oriented messaging
 protocol that can be used to talk to message brokers such as Apace ActiveMQ.
 
+
+%package devel
+Requires:           litestomp
+
+%description devel
+STOMP client library development kit
+
+
 %prep
 %autosetup -n litestomp-%{version}
 
@@ -37,6 +45,9 @@ make install
 %files
 %doc AUTHORS README.md LICENSE COPYING
 %{_libdir}/*
+
+%files devel
+%{_includedir}/*
 
 
 %changelog
