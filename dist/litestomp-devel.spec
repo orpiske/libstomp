@@ -4,7 +4,7 @@
 Summary:            STOMP client library development kit
 Name:               litestomp
 Version:            0.0.1
-Release:            3%{?dist}
+Release:            4%{?dist}
 License:            Apache-2.0
 Group:              Development/Tools
 Source:             litestomp-%{version}.tar.gz
