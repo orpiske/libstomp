@@ -8,7 +8,7 @@ Linux Build Status: [![Linux Build Status](https://travis-ci.org/orpiske/litesto
 Introduction:
 ----
 
-This is a fork of the old litestomp library, modified for simplicity and
+This is a fork of the old libstomp library, modified for simplicity and
 reusability. This library implements a simple STOMP, a text oriented messaging
 protocol that can be used to talk to message brokers such as Apace ActiveMQ.
 
