@@ -9,8 +9,9 @@ Introduction:
 ----
 
 This is a fork of the old libstomp library, modified for simplicity and
-reusability. This library implements a simple STOMP, a text oriented messaging
-protocol that can be used to talk to message brokers such as Apace ActiveMQ.
+reusability. This library implements STOMP, a simple text oriented messaging
+protocol that can be used to talk to message brokers such as Apache ActiveMQ, 
+RabbitMQ and Apache Artemis.
 
 This library supports the version 1.2 of the STOMP protocol as documented by:
 https://stomp.github.io/stomp-specification-1.2.html.
