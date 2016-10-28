@@ -19,6 +19,9 @@ https://stomp.github.io/stomp-specification-1.2.html.
 Project documentation, as well as examples, can be found here:
 http://orpiske.net/files/litestomp/html/index.html.
 
+Binary packages for Fedora, CentOS (and RHEL) can be found at this COPR page: 
+https://copr.fedorainfracloud.org/coprs/orpiske/litestomp/
+
 Please feel free to contribute to make this library better.
 
 
