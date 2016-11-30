@@ -1,23 +1,35 @@
+env:
+  global:
+    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+    #   via the "travis encrypt" command using the project repo's public key
+    - secure: "UvWBTSSIETpar3YoC7Sp3aUfNyI8v6i8gVGmcxi5LrjpIN/hn+UuxUTcJY79/19hLRalnxLsJAs+S0nWWPdTTQp5PcYECHDMu6BS23qanJVzIYJdw7DagnW9bQum6u1duI7q8MbM1gm6x3DUAMraspL8YH2nwTTxv36C3gBSaLzZovkUx+AirkApgFnlUPdKJbaL5M1MWIq4UAGqhCzJnFVmYNke/1yTTdML8T/EifXoGQqL9tSo7Vma1csTuPCu/ps2dO1YGRiulL0QEX7G2Ms9fhV0XglglVxmbGA44nGcMm8pMd1b1OofM4CNOmJ52KP66EYA5ErVRwFNJbab0hLH64i+50Y9Bgt0NiF7BN9e49m459ap56f8nKKM1ilQRN6KdZK2niQe+T/y4i0T6AjFxdjzYG3sduD3eNacAtR38xeQfNJVtkomTFg/+qaloUUEWoDuS7Nm+cfusqdCYdKqxbgMuCEJHnO+5xiOzeiq+KuL71ZcR0oouRyHJkzJpPMzgI3/9UixiFkLQ6Dqr6XJt4CSi/22/wnLW03XSo2wM25HFvIi3xSjJGf7Q++9DRMO/PfjtWjXDgyGBp4RgljAiyjwW4YgrL0ntCHy7QW84iNqxio8vUtUDwuKyoL14dtLjc+G6pZiDNnbXJbJnojCIY1fzYSk7RmoFicjqak="
+
 os:
   - linux
   - osx
-
 sudo: true
 language:
   - c
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install apr apr-util doxygen ; fi
-before_script:
-  - mkdir build
+script:
+  - mkdir -p build
   - cd build
   - cmake -DCMAKE_BUILD_TYPE=RELEASE ..
-script:
   - make all
-
+  - cd ..
 addons:
   apt:
     packages:
       - libapr1-dev
       - libaprutil1-dev
       - doxygen
+  coverity_scan:
+    project:
+      name: "orpiske/litestomp"
+      description: "STOMP messaging implementation in C"
+    notification_email: angusyoung@gmail.com
+    build_command_prepend: "mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=RELEASE .."
+    build_command: "make all"
+    branch_pattern: coverity_scan
