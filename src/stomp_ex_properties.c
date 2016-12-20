@@ -52,7 +52,7 @@ stomp_exchange_util_ctime(stomp_exchange_properties_t *properties,
         return STOMP_FAILURE;
     }
 
-    const size_t buff_size = 64;
+    const size_t buff_size = 32;
     char *buff = apr_pcalloc(pool, buff_size);
 
     snprintf(buff, buff_size, "%"PRIi64"", apr_time_as_msec(now));
