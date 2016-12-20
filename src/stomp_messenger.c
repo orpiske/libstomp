@@ -589,7 +589,7 @@ stomp_status_code_t stomp_receive(stomp_messenger_t *messenger,
     apr_status_t stat = stomp_read(messenger->connection, &frame, message->pool);
     if (stat == APR_SUCCESS) {
         stomp_message_format(message, frame->body, frame->body_length);
-        messenger->exchange_properties->hash = apr_hash_overlay(message->pool,
+        messenger->exchange_properties->hash = apr_hash_overlay(messenger->pool,
                 frame->headers, messenger->exchange_properties->hash);
 
         if (strncmp(frame->command, "MESSAGE", strlen("MESSAGE")) == 0) {
