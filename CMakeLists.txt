@@ -20,7 +20,7 @@ else(CMAKE_SIZEOF_VOID_P EQUAL 8)
 endif(CMAKE_SIZEOF_VOID_P EQUAL 8)
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    add_definitions(-DLINUX_BUILD) 
+    add_definitions(-DLINUX_BUILD)
 
     if(EXISTS "/etc/redhat-release")
         add_definitions(-D__RH_DISTRO__)
@@ -44,10 +44,10 @@ if(NOT CMAKE_BUILD_TYPE)
 endif(NOT CMAKE_BUILD_TYPE)
 
 macro (FailIfNotSet VARIABLE name)
-	IF (NOT ${VARIABLE}) 
+	IF (NOT ${VARIABLE})
 		SET(MSG "** A required file, " ${name} ", was not found on your system **")
 		MESSAGE(FATAL_ERROR ${MSG})
-	ENDIF (NOT ${VARIABLE}) 
+	ENDIF (NOT ${VARIABLE})
 endmacro(FailIfNotSet)
 
 include (CheckIncludeFiles)
@@ -66,22 +66,22 @@ IF (UNIX)
 	CHECK_INCLUDE_FILES(stdlib.h HAVE_STDLIB_H)
 	FailIfNotSet(HAVE_STDLIB_H stdlib.h)
 
-	
+
 	CHECK_INCLUDE_FILES(stdio.h HAVE_STDIO_H)
 	FailIfNotSet(HAVE_STDIO_H stdio.h)
 ENDIF (UNIX)
 
 if (CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_C_FLAGS "-Wall -Wshadow -std=c99 -pipe" CACHE STRING
+    set(CMAKE_C_FLAGS "-Wall -Wshadow -std=c99 -pipe ${CMAKE_C_FLAGS}" CACHE STRING
         "Flags used by the compiler during all build types." FORCE
     )
-    set(CMAKE_C_FLAGS_DEBUG "-fdiagnostics-color=auto -g" CACHE STRING
+    set(CMAKE_C_FLAGS_DEBUG "-fdiagnostics-color=auto -g ${CMAKE_C_FLAGS_DEBUG}" CACHE STRING
         "Flags used by the compiler during debug build." FORCE
     )
-    set(CMAKE_C_FLAGS_RELEASE "-O2 -fomit-frame-pointer" CACHE STRING
+    set(CMAKE_C_FLAGS_RELEASE "-O2 -fomit-frame-pointer -D_FORTIFY_SOURCE=1 ${CMAKE_C_FLAGS_RELEASE}" CACHE STRING
         "Flags used by the compiler during release build." FORCE
     )
-	
+
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
 
@@ -92,9 +92,9 @@ include_directories(src)
 
 add_definitions(-D_GNU_SOURCE -D_POSIX_C_SOURCE)
 
-if (${CMAKE_SYSTEM_NAME} EQUAL "Linux") 
- add_definitions(-DLINUX_BUILD) 
-endif (${CMAKE_SYSTEM_NAME} EQUAL "Linux") 
+if (${CMAKE_SYSTEM_NAME} EQUAL "Linux")
+ add_definitions(-DLINUX_BUILD)
+endif (${CMAKE_SYSTEM_NAME} EQUAL "Linux")
 
 add_library(
 	litestomp SHARED
@@ -103,7 +103,7 @@ add_library(
         src/stomp_status.c
         src/stomp_message.c
         src/stomp_ex_properties.c
-        src/stomp_messenger.c 
+        src/stomp_messenger.c
 )
 
 target_link_libraries(
@@ -117,7 +117,7 @@ install(TARGETS
 	LIBRARY DESTINATION ${CPP_LIBRARY_DIR}
 )
 
-install(DIRECTORY src/ 
+install(DIRECTORY src/
         DESTINATION include/${PROJECT_NAME}
         FILES_MATCHING PATTERN "*.h")
 
