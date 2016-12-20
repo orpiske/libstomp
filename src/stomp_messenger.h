@@ -1,12 +1,12 @@
 /**
  Copyright 2016 Otavio Rodolfo Piske
- 
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,6 +41,14 @@
 
 typedef apr_uri_t stomp_uri_t;
 
+typedef enum stomp_options_t_ {
+    STOMP_OPT_DEFAULT = 0,
+    /**
+     * Removes the / from beginning of the path (required for Artemis broker)
+     */
+    STOMP_OPT_STRIP_ROOT = 1,
+} stomp_options_t;
+
 /**
  * This struct provides an abstraction for some of the message exchange details
  */
@@ -52,6 +60,7 @@ typedef struct stomp_messenger_t_ {
     stomp_status_t status;
     apr_pool_t *pool;
     stomp_uri_t uri;
+    stomp_options_t options;
 } stomp_messenger_t;
 
 
@@ -70,12 +79,12 @@ void stomp_messenger_destroy(stomp_messenger_t **messenger);
 
 
 /**
- * Sets the timeout for messenger communication. The value set also applies to 
+ * Sets the timeout for messenger communication. The value set also applies to
  * receipt messages
  * @return A messenger object that can be used to exchange data via STOMP
  * @param timeout the timeout in milliseconds
  */
-void stomp_messenger_set_timeout(stomp_messenger_t *messenger, 
+void stomp_messenger_set_timeout(stomp_messenger_t *messenger,
                                               int32_t timeout);
 
 
@@ -83,26 +92,26 @@ void stomp_messenger_set_timeout(stomp_messenger_t *messenger,
  * Sets the communication endpoint for the message exchange.
  * @param messenger An instance of the messenger object
  * @param uri A connection uri in the stomp://[user]:[password]@<hostname>:<port>/<endpoint address>
- * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure, 
- * the code will set the error details on the status member of the messenger 
+ * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure,
+ * the code will set the error details on the status member of the messenger
  * object
  */
-stomp_status_code_t stomp_set_endpoint(stomp_messenger_t *messenger, 
+stomp_status_code_t stomp_set_endpoint(stomp_messenger_t *messenger,
         const char *uri);
 
 
 /**
  * Connects to the endpoint associated with the messenger
  * @param messenger A pointer to an instance of the messenger object
- * @param header A pointer to an instance of the appropriate header object for 
- * the given exchange. The instance of the object must contain the required 
+ * @param header A pointer to an instance of the appropriate header object for
+ * the given exchange. The instance of the object must contain the required
  * frame headers as expected by the frame.
  * @param timeout the timeout in milliseconds
- * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure, 
- * the code will set the error details on the status member of the messenger 
+ * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure,
+ * the code will set the error details on the status member of the messenger
  * object
  */
-stomp_status_code_t stomp_connect(stomp_messenger_t *messenger, 
+stomp_status_code_t stomp_connect(stomp_messenger_t *messenger,
                                   stomp_connection_header_t *header,
                                   int32_t timeout);
 
@@ -110,14 +119,14 @@ stomp_status_code_t stomp_connect(stomp_messenger_t *messenger,
 /**
  * Disconnects from the endpoint associated with the messenger
  * @param messenger A pointer to an instance of the messenger object
- * @param header A pointer to an instance of the appropriate header object for 
- * the given exchange. The instance of the object must contain the required 
+ * @param header A pointer to an instance of the appropriate header object for
+ * the given exchange. The instance of the object must contain the required
  * frame headers as expected by the frame.
- * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure, 
- * the code will set the error details on the status member of the messenger 
+ * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure,
+ * the code will set the error details on the status member of the messenger
  * object
  */
-stomp_status_code_t stomp_disconnect(stomp_messenger_t *messenger, 
+stomp_status_code_t stomp_disconnect(stomp_messenger_t *messenger,
                                   stomp_disconnection_header_t *header);
 
 
@@ -125,130 +134,130 @@ stomp_status_code_t stomp_disconnect(stomp_messenger_t *messenger,
 /**
  * Subscribes to the endpoint associated with the messenger
  * @param messenger A pointer to an instance of the messenger object
- * @param header A pointer to an instance of the appropriate header object for 
- * the given exchange. The instance of the object must contain the required 
+ * @param header A pointer to an instance of the appropriate header object for
+ * the given exchange. The instance of the object must contain the required
  * frame headers as expected by the frame.
- * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure, 
- * the code will set the error details on the status member of the messenger 
+ * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure,
+ * the code will set the error details on the status member of the messenger
  * object
  */
-stomp_status_code_t stomp_subscribe(stomp_messenger_t *messenger, 
+stomp_status_code_t stomp_subscribe(stomp_messenger_t *messenger,
                                   stomp_subscription_header_t *header);
 
 
 /**
  * Unsubscribes from the endpoint associated with the messenger
  * @param messenger A pointer to an instance of the messenger object
- * @param header A pointer to an instance of the appropriate header object for 
- * the given exchange. The instance of the object must contain the required 
+ * @param header A pointer to an instance of the appropriate header object for
+ * the given exchange. The instance of the object must contain the required
  * frame headers as expected by the frame.
- * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure, 
- * the code will set the error details on the status member of the messenger 
+ * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure,
+ * the code will set the error details on the status member of the messenger
  * object
  */
-stomp_status_code_t stomp_unsubscribe(stomp_messenger_t *messenger, 
+stomp_status_code_t stomp_unsubscribe(stomp_messenger_t *messenger,
                                   stomp_subscription_header_t *header);
 
 
 /**
  * Acknowledges the processing of a message
  * @param messenger A pointer to an instance of the messenger object
- * @param header A pointer to an instance of the appropriate header object for 
- * the given exchange. The instance of the object must contain the required 
+ * @param header A pointer to an instance of the appropriate header object for
+ * the given exchange. The instance of the object must contain the required
  * frame headers as expected by the frame.
- * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure, 
- * the code will set the error details on the status member of the messenger 
+ * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure,
+ * the code will set the error details on the status member of the messenger
  * object
  */
-stomp_status_code_t stomp_ack(stomp_messenger_t *messenger, 
+stomp_status_code_t stomp_ack(stomp_messenger_t *messenger,
                                   stomp_ack_header_t *header);
 
 
 /**
  * Not-acknowledges the processing of a message
  * @param messenger A pointer to an instance of the messenger object
- * @param header A pointer to an instance of the appropriate header object for 
- * the given exchange. The instance of the object must contain the required 
+ * @param header A pointer to an instance of the appropriate header object for
+ * the given exchange. The instance of the object must contain the required
  * frame headers as expected by the frame.
- * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure, 
- * the code will set the error details on the status member of the messenger 
+ * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure,
+ * the code will set the error details on the status member of the messenger
  * object
  */
-stomp_status_code_t stomp_nack(stomp_messenger_t *messenger, 
+stomp_status_code_t stomp_nack(stomp_messenger_t *messenger,
                                   stomp_ack_header_t *header);
 
 
 /**
  * Begin a transaction
  * @param messenger A pointer to an instance of the messenger object
- * @param header A pointer to an instance of the appropriate header object for 
- * the given exchange. The instance of the object must contain the required 
+ * @param header A pointer to an instance of the appropriate header object for
+ * the given exchange. The instance of the object must contain the required
  * frame headers as expected by the frame.
- * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure, 
- * the code will set the error details on the status member of the messenger 
+ * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure,
+ * the code will set the error details on the status member of the messenger
  * object
  */
-stomp_status_code_t stomp_begin(stomp_messenger_t *messenger, 
+stomp_status_code_t stomp_begin(stomp_messenger_t *messenger,
                                   stomp_transaction_header_t *header);
 
 
 /**
  * Commits a transaction
  * @param messenger A pointer to an instance of the messenger object
- * @param header A pointer to an instance of the appropriate header object for 
- * the given exchange. The instance of the object must contain the required 
+ * @param header A pointer to an instance of the appropriate header object for
+ * the given exchange. The instance of the object must contain the required
  * frame headers as expected by the frame.
- * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure, 
- * the code will set the error details on the status member of the messenger 
+ * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure,
+ * the code will set the error details on the status member of the messenger
  * object
  */
-stomp_status_code_t stomp_commit(stomp_messenger_t *messenger, 
+stomp_status_code_t stomp_commit(stomp_messenger_t *messenger,
                                   stomp_transaction_header_t *header);
 
 
 /**
  * Aborts a transaction
  * @param messenger A pointer to an instance of the messenger object
- * @param header A pointer to an instance of the appropriate header object for 
- * the given exchange. The instance of the object must contain the required 
+ * @param header A pointer to an instance of the appropriate header object for
+ * the given exchange. The instance of the object must contain the required
  * frame headers as expected by the frame.
- * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure, 
- * the code will set the error details on the status member of the messenger 
+ * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure,
+ * the code will set the error details on the status member of the messenger
  * object
  */
-stomp_status_code_t stomp_abort(stomp_messenger_t *messenger, 
+stomp_status_code_t stomp_abort(stomp_messenger_t *messenger,
                                   stomp_transaction_header_t *header);
 
 
 /**
  * Sends a message
  * @param messenger A pointer to an instance of the messenger object
- * @param header A pointer to an instance of the appropriate header object for 
- * the given exchange. The instance of the object must contain the required 
+ * @param header A pointer to an instance of the appropriate header object for
+ * the given exchange. The instance of the object must contain the required
  * frame headers as expected by the frame.
  * @param message the message to exchange
- * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure, 
- * the code will set the error details on the status member of the messenger 
+ * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure,
+ * the code will set the error details on the status member of the messenger
  * object
  */
-stomp_status_code_t stomp_send(stomp_messenger_t *messenger, 
-                                  stomp_send_header_t *header, 
+stomp_status_code_t stomp_send(stomp_messenger_t *messenger,
+                                  stomp_send_header_t *header,
                                   stomp_message_t *message);
 
 
 /**
- * Reads the exchange data from the broker. The returned exchange may be a 
+ * Reads the exchange data from the broker. The returned exchange may be a
  * message or an error.
  * @param messenger A pointer to an instance of the messenger object
- * @param header A pointer to an instance of the appropriate header object for 
- * the given exchange. The instance of the object must contain the required 
+ * @param header A pointer to an instance of the appropriate header object for
+ * the given exchange. The instance of the object must contain the required
  * frame headers as expected by the frame.
  * @param message the message to exchange
- * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure, 
- * the code will set the error details on the status member of the messenger 
+ * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure,
+ * the code will set the error details on the status member of the messenger
  * object
  */
-stomp_status_code_t stomp_receive(stomp_messenger_t *messenger, 
+stomp_status_code_t stomp_receive(stomp_messenger_t *messenger,
                                   stomp_receive_header_t *header,
                                   stomp_message_t *message);
 

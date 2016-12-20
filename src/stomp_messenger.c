@@ -66,6 +66,8 @@ stomp_messenger_t *stomp_messenger_init()
         return ret;
     }
 
+    // For Apache Artemis complains about / on the beginning of the path
+    ret->options |= STOMP_OPT_STRIP_ROOT;
     return ret;
 }
 
@@ -100,7 +102,8 @@ stomp_status_code_t stomp_set_endpoint(stomp_messenger_t *messenger, const char 
 {
     //fprintf(stderr, "Parsing URI: %s\n", uri);
     apr_status_t stat = apr_uri_parse(messenger->pool, uri, &messenger->uri);
-    //fprintf(stderr, "Done: %s:%d\n", messenger->uri.hostname, messenger->uri.port);
+    fprintf(stderr, "Done: %s:%d [%s]\n", messenger->uri.hostname, messenger->uri.port,
+	    messenger->uri.path);
 
     if (stat != APR_SUCCESS) {
         stomp_status_set(&messenger->status, STOMP_FAILURE,
@@ -299,8 +302,15 @@ stomp_status_code_t stomp_subscribe(stomp_messenger_t *messenger,
     frame.command = "SUBSCRIBE";
     frame.headers = apr_hash_make(messenger->pool);
 
-    apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING,
+
+    if (messenger->options & STOMP_OPT_STRIP_ROOT) {
+	apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING,
+            &messenger->uri.path[1]);
+    }
+    else {
+	apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING,
             messenger->uri.path);
+    }
 
     if (header == NULL) {
         stomp_status_set(&messenger->status, STOMP_FAILURE,
@@ -526,9 +536,14 @@ stomp_status_code_t stomp_send(stomp_messenger_t *messenger,
     frame.headers = apr_hash_copy(messenger->pool, messenger->exchange_properties->hash);
 
 
-    apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING,
+    if (messenger->options & STOMP_OPT_STRIP_ROOT) {
+	apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING,
+            &messenger->uri.path[1]);
+    }
+    else {
+	apr_hash_set(frame.headers, "destination", APR_HASH_KEY_STRING,
             messenger->uri.path);
-
+    }
 
     frame.body_length = message->size;
     frame.body = message->body;
