@@ -40,7 +40,13 @@ int main(int argc, char **argv)
     /*
      * Sets the endpoint address
      */
-    stat = stomp_set_endpoint(messenger, "stomp://localhost:61613/queue/test.stomp.queue");
+    char *url = argv[1];
+
+    if (url == NULL) {
+	url = "stomp://localhost:61613/queue/test.stomp.queue";
+    }
+
+    stat = stomp_set_endpoint(messenger, url);
     if (stat != STOMP_SUCCESS) {
         fprintf(stderr, "%s\n", messenger->status.message);
 
