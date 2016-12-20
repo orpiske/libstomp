@@ -533,7 +533,7 @@ stomp_status_code_t stomp_send(stomp_messenger_t *messenger,
 {
     stomp_frame frame;
     frame.command = "SEND";
-    frame.headers = apr_hash_copy(messenger->pool, messenger->exchange_properties->hash);
+    frame.headers = apr_hash_copy(message->pool, messenger->exchange_properties->hash);
 
 
     if (messenger->options & STOMP_OPT_STRIP_ROOT) {
@@ -554,7 +554,7 @@ stomp_status_code_t stomp_send(stomp_messenger_t *messenger,
     }
 
 
-    apr_status_t stat = stomp_write(messenger->connection, &frame, messenger->pool);
+    apr_status_t stat = stomp_write(messenger->connection, &frame, message->pool);
     if (stat != APR_SUCCESS) {
         stomp_status_t engine_status = stomp_engine_last_status();
 
@@ -586,10 +586,10 @@ stomp_status_code_t stomp_receive(stomp_messenger_t *messenger,
         return STOMP_FAILURE;
     }
 
-    apr_status_t stat = stomp_read(messenger->connection, &frame, messenger->pool);
+    apr_status_t stat = stomp_read(messenger->connection, &frame, message->pool);
     if (stat == APR_SUCCESS) {
         stomp_message_format(message, frame->body, frame->body_length);
-        messenger->exchange_properties->hash = apr_hash_overlay(messenger->pool,
+        messenger->exchange_properties->hash = apr_hash_overlay(message->pool,
                 frame->headers, messenger->exchange_properties->hash);
 
         if (strncmp(frame->command, "MESSAGE", strlen("MESSAGE")) == 0) {
@@ -603,8 +603,11 @@ stomp_status_code_t stomp_receive(stomp_messenger_t *messenger,
             return STOMP_SUCCESS;
         }
 
+	stomp_status_t io_status = stomp_io_last_status();
+
         stomp_status_set(&messenger->status, STOMP_FAILURE,
-                "Unable to read the frame data to the underlying connection");
+                "Unable to read the frame data to the underlying connection: %s",
+			 io_status.message);
 
         return STOMP_FAILURE;
     }
