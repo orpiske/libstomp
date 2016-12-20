@@ -606,7 +606,7 @@ stomp_status_code_t stomp_receive(stomp_messenger_t *messenger,
 	stomp_status_t io_status = stomp_io_last_status();
 
         stomp_status_set(&messenger->status, STOMP_FAILURE,
-                "Unable to read the frame data to the underlying connection: %s",
+                "Unable to read the frame data from the underlying connection: %s",
 			 io_status.message);
 
         return STOMP_FAILURE;
