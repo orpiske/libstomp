@@ -16,6 +16,12 @@
 #ifndef STOMP_MESSAGE_H
 #define STOMP_MESSAGE_H
 
+#if defined(__DEBIAN_DISTRO__) || defined(__UBUNTU_DISTRO__)
+#include <apr-1.0/apr_pools.h>
+#else
+#include <apr-1/apr_pools.h>
+#endif // defined(__DEBIAN_DISTRO__) || defined(__UBUNTU_DISTRO__)
+
 #include "stomp_status.h"
 
 #include <string.h>

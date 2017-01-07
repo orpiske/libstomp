@@ -3,8 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-#include <apr-1/apr_pools.h>
-
 #include "stomp_message.h"
 
 stomp_message_t *stomp_message_create(stomp_status_t *status) {
