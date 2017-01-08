@@ -33,6 +33,10 @@ else(CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(CPP_LIBRARY_DIR "lib")
 endif(CMAKE_SIZEOF_VOID_P EQUAL 8)
 
+if(EXISTS "/etc/debian_version")
+  set(CPP_LIBRARY_DIR "lib")
+endif(EXISTS "/etc/debian_version")
+
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     add_definitions(-DLINUX_BUILD)
 
