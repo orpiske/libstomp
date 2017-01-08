@@ -1,6 +1,20 @@
 project(litestomp)
 cmake_minimum_required(VERSION 2.8)
 
+set(LITESTOMP_VERSION 0.0.1)
+set(LITESTOMP_VERSION_MAJOR 0)
+set(LITESTOMP_VERSION_MINOR 0)
+set(LITESTOMP_VERSION_PATCH 1)
+
+
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/dist/cmake_uninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/dist/cmake_uninstall.cmake"
+    IMMEDIATE @ONLY)
+
+add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/dist/cmake_uninstall.cmake)
+
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/target/bin)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/target/lib)
 
@@ -97,7 +111,7 @@ if (${CMAKE_SYSTEM_NAME} EQUAL "Linux")
 endif (${CMAKE_SYSTEM_NAME} EQUAL "Linux")
 
 add_library(
-	litestomp SHARED
+	litestomp-${LITESTOMP_VERSION_MAJOR} SHARED
         src/stomp_io.c
         src/stomp_engine.c
         src/stomp_status.c
@@ -107,18 +121,18 @@ add_library(
 )
 
 target_link_libraries(
-    litestomp
+    litestomp-${LITESTOMP_VERSION_MAJOR}
     apr-1
     aprutil-1
 )
 
 install(TARGETS
-        litestomp
+        litestomp-${LITESTOMP_VERSION_MAJOR}
 	LIBRARY DESTINATION ${CPP_LIBRARY_DIR}
 )
 
 install(DIRECTORY src/
-        DESTINATION include/${PROJECT_NAME}
+        DESTINATION include/${PROJECT_NAME}-${LITESTOMP_VERSION_MAJOR}
         FILES_MATCHING PATTERN "*.h")
 
 
