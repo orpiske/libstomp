@@ -83,6 +83,22 @@ endif (CMAKE_COMPILER_IS_GNUCXX)
 add_custom_target(documentation
     COMMAND ${CMAKE_COMMAND} -P ../documentation.cmake)
 
+
+find_path(APR_INCLUDE_DIR apr_general.h
+        PATH_SUFFIXES apr-1 apr-1.0)
+find_library(APR_LIB NAMES apr-1)
+
+message(STATUS "APR headers found at ${APR_INCLUDE_DIR}")
+message(STATUS "APR library found at ${APR_LIB}")
+
+find_path(APR_UTIL_INCLUDE_DIR apu.h
+        PATH_SUFFIXES apr-1 apr-1.0)
+find_library(APR_UTIL_LIB NAMES aprutil-1)
+
+message(STATUS "APR util headers found at ${APR_UTIL_INCLUDE_DIR}")
+message(STATUS "APR util library found at ${APR_UTIL_LIB}")
+
+
 include_directories(src)
 
 
@@ -98,8 +114,8 @@ add_library(
 
 target_link_libraries(
 	litestomp-${LITESTOMP_VERSION_MAJOR}
-	apr-1
-	aprutil-1
+	${APR_LIB}
+	${APR_UTIL_LIB}
 )
 
 install(TARGETS
