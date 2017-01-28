@@ -6,6 +6,7 @@ set(LITESTOMP_VERSION_MAJOR 0)
 set(LITESTOMP_VERSION_MINOR 0)
 set(LITESTOMP_VERSION_PATCH 1)
 
+include(GNUInstallDirs)
 
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/dist/cmake_uninstall.cmake.in"
@@ -15,34 +16,14 @@ configure_file(
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/dist/cmake_uninstall.cmake)
 
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/target/bin)
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/target/lib)
-
-set(RUNTIME_DIR "bin")
-set(CPP_INCLUDE_DIR "include")
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/target/${CMAKE_INSTALL_BINDIR})
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/target/${CMAKE_INSTALL_LIBDIR})
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-	add_definitions(-DLINUX_BUILD -D_GNU_SOURCE)
-	if (CMAKE_SIZEOF_VOID_P EQUAL 8)
-		message(STATUS "64 bits compiler detected")
-		set(APP_BUILD_PLATFORM 64)
-		set(APP_BUILD_PLATFORM_NAME "x86_64")
-		set(CPP_LIBRARY_DIR "lib64")
-	else (CMAKE_SIZEOF_VOID_P EQUAL 8)
-		message(STATUS "32 bits compiler detected")
-		set(APP_BUILD_PLATFORM 32)
-		set(APP_BUILD_PLATFORM_NAME "i686")
-		set(CPP_LIBRARY_DIR "lib")
-	endif (CMAKE_SIZEOF_VOID_P EQUAL 8)
-
-	if(EXISTS "/etc/debian_version")
-			set(CPP_LIBRARY_DIR "lib")
-	endif(EXISTS "/etc/debian_version")
-
+	# TODO: POSIX_C_SOURCE is, probably, not necessary. Check and fix.
+	add_definitions(-DLINUX_BUILD -D_GNU_SOURCE -D_POSIX_C_SOURCE)
 else (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 	message(STATUS "Compiling for " ${CMAKE_SYSTEM_NAME} "")
-	set(CPP_LIBRARY_DIR "lib")
-
 	if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
 		set(CMAKE_MACOSX_RPATH TRUE)
 		add_definitions(-D__OSX__)
@@ -104,36 +85,31 @@ add_custom_target(documentation
 
 include_directories(src)
 
-add_definitions(-D_GNU_SOURCE -D_POSIX_C_SOURCE)
-
-if (${CMAKE_SYSTEM_NAME} EQUAL "Linux")
- add_definitions(-DLINUX_BUILD)
-endif (${CMAKE_SYSTEM_NAME} EQUAL "Linux")
 
 add_library(
 	litestomp-${LITESTOMP_VERSION_MAJOR} SHARED
-        src/stomp_io.c
-        src/stomp_engine.c
-        src/stomp_status.c
-        src/stomp_message.c
-        src/stomp_ex_properties.c
-        src/stomp_messenger.c
+	src/stomp_io.c
+	src/stomp_engine.c
+	src/stomp_status.c
+	src/stomp_message.c
+	src/stomp_ex_properties.c
+	src/stomp_messenger.c
 )
 
 target_link_libraries(
-    litestomp-${LITESTOMP_VERSION_MAJOR}
-    apr-1
-    aprutil-1
+	litestomp-${LITESTOMP_VERSION_MAJOR}
+	apr-1
+	aprutil-1
 )
 
 install(TARGETS
-        litestomp-${LITESTOMP_VERSION_MAJOR}
-	LIBRARY DESTINATION ${CPP_LIBRARY_DIR}
+	litestomp-${LITESTOMP_VERSION_MAJOR}
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
 install(DIRECTORY src/
-        DESTINATION include/${PROJECT_NAME}-${LITESTOMP_VERSION_MAJOR}
-        FILES_MATCHING PATTERN "*.h")
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}-${LITESTOMP_VERSION_MAJOR}
+	FILES_MATCHING PATTERN "*.h")
 
 
 
