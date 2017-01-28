@@ -14,19 +14,12 @@
 #ifndef STOMP_EX_PROPERTIES_H
 #define STOMP_EX_PROPERTIES_H
 
-#if defined(__DEBIAN_DISTRO__) || defined(__UBUNTU_DISTRO__)
-#include <apr-1.0/apr_hash.h>
-#include <apr-1.0/apr_time.h>
-#else 
-#include <apr-1/apr_hash.h>
-#include <apr-1/apr_time.h>
-#endif // defined(__DEBIAN_DISTRO__) || defined(__UBUNTU_DISTRO__)
-
-
-
 #include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>
+
+#include <apr_hash.h>
+#include <apr_time.h>
 
 #include "stomp_status.h"
 

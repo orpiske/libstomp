@@ -21,23 +21,13 @@
 #ifndef STOMP_IO_H
 #define STOMP_IO_H
 
-#if defined(__DEBIAN_DISTRO__) || defined(__UBUNTU_DISTRO__)
-#include <apr-1.0/apr_general.h>
-#include <apr-1.0/apr_network_io.h>
-#include <apr-1.0/apr_hash.h>
-#include <apr-1.0/apr_env.h>
-#include <apr-1.0/apr_strings.h>
-#include <apr-1.0/apr_support.h>
-#else
-#include <apr-1/apr_general.h>
-#include <apr-1/apr_network_io.h>
-#include <apr-1/apr_hash.h>
-#include <apr-1/apr_env.h>
-#include <apr-1/apr_strings.h>
-#include <apr-1/apr_support.h>
-#endif // defined(__DEBIAN_DISTRO__) || defined(__UBUNTU_DISTRO__)
 
-
+#include <apr_general.h>
+#include <apr_network_io.h>
+#include <apr_hash.h>
+#include <apr_env.h>
+#include <apr_strings.h>
+#include <apr_support.h>
 
 #include <stdio.h>
 #include <stdbool.h>

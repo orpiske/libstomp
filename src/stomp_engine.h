@@ -28,20 +28,12 @@
 
 #include <stdlib.h>
 #include <string.h>
-#if defined(__DEBIAN_DISTRO__) || defined(__UBUNTU_DISTRO__)
- #include <apr-1.0/apr.h>
- #include <apr-1.0/apr_strings.h>
- #include <apr-1.0/apr_general.h>
- #include <apr-1.0/apr_network_io.h>
- #include <apr-1.0/apr_hash.h>
-#else
- #include <apr-1/apr.h>
- #include <apr-1/apr_strings.h>
- #include <apr-1/apr_general.h>
- #include <apr-1/apr_network_io.h>
- #include <apr-1/apr_hash.h>
-#endif // defined(__DEBIAN_DISTRO__) || defined(__UBUNTU_DISTRO__)
 
+#include <apr.h>
+#include <apr_strings.h>
+#include <apr_general.h>
+#include <apr_network_io.h>
+#include <apr_hash.h>
 
 #include "stomp_connection.h"
 #include "stomp_frame.h"

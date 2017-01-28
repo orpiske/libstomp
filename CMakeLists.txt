@@ -99,7 +99,7 @@ message(STATUS "APR util headers found at ${APR_UTIL_INCLUDE_DIR}")
 message(STATUS "APR util library found at ${APR_UTIL_LIB}")
 
 
-include_directories(src)
+include_directories(${APR_INCLUDE_DIR} ${APR_UTIL_INCLUDE_DIR} src)
 
 
 add_library(
