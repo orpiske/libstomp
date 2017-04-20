@@ -43,3 +43,12 @@ void stomp_status_reset(stomp_status_t *status) {
 void stomp_status_success(stomp_status_t *status) {
     stomp_status_set(status, STOMP_SUCCESS, NULL);
 }
+
+
+inline bool stomp_success(stomp_status_code_t stat) {
+	return stat & STOMP_SUCCESS ? true : false;
+}
+
+inline bool stomp_error(stomp_status_code_t stat) {
+    return stat & STOMP_SUCCESS ? false : true;
+}

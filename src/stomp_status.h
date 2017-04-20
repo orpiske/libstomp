@@ -24,13 +24,15 @@ extern "C" {
 #include <stdint.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdbool.h>
 
 /*
  * Valid status codes
  */
 typedef enum stomp_status_code_t_ {
-    STOMP_SUCCESS,
-    STOMP_FAILURE,
+    STOMP_FAILURE = 0,
+    STOMP_SUCCESS = 1,
+    STOMP_NO_DATA = 2,
 } stomp_status_code_t;
 
 /**
@@ -63,6 +65,16 @@ void stomp_status_reset(stomp_status_t *status);
  * @param status an instance of the status object to set
  */
 void stomp_status_success(stomp_status_t *status);
+
+/**
+ * Tests whether the status code for a success-related value
+ */
+bool stomp_success(stomp_status_code_t stat);
+
+/**
+ * Tests whether the status code for an error-related value
+ */
+bool stomp_error(stomp_status_code_t stat);
 
 #ifdef __cplusplus
 }

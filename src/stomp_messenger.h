@@ -246,7 +246,8 @@ stomp_status_code_t stomp_send(stomp_messenger_t *messenger,
  * @param message the message to exchange
  * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure,
  * the code will set the error details on the status member of the messenger
- * object
+ * object. If there's a timeout, a composed response of STOMP_SUCCESS and STOMP_NO_DATA 
+ * will be returned.
  */
 stomp_status_code_t stomp_receive(stomp_messenger_t *messenger,
                                   stomp_receive_header_t *header,

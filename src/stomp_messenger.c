@@ -579,11 +579,15 @@ stomp_status_code_t stomp_receive(stomp_messenger_t *messenger,
 {
     stomp_frame *frame;
 
+    /* 
+     * If timed out reading data, maybe there's nothing on the broker. So try
+     * ignore it and leave for the application to handle
+     */
     if (!stomp_io_can_read(messenger->connection)) {
-        stomp_status_set(&messenger->status, STOMP_FAILURE,
+        stomp_status_set(&messenger->status, STOMP_SUCCESS | STOMP_NO_DATA,
                 "Timed out while trying to read data");
 
-        return STOMP_FAILURE;
+        return STOMP_SUCCESS | STOMP_NO_DATA;
     }
 
     apr_status_t stat = stomp_read(messenger->connection, &frame, message->pool);
