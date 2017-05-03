@@ -31,6 +31,5 @@ Dependencies:
 Runtime/Compilation:
 * cmake
 * gcc or clang
-* qpid-proton-c-devel
 * apr-devel
 * apr-util-devel
