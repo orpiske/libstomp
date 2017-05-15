@@ -33,7 +33,7 @@ endif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 
 if(NOT CMAKE_BUILD_TYPE)
 	SET(CMAKE_BUILD_TYPE Debug CACHE STRING
-      	"Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+      	"Choose the type of build, options are: Debug, RelWithDebInfo or Release."
       	FORCE
 	)
 endif(NOT CMAKE_BUILD_TYPE)
@@ -76,6 +76,9 @@ if (CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_C_FLAGS_RELEASE "-O2 -fomit-frame-pointer -D_FORTIFY_SOURCE=1 ${CMAKE_C_FLAGS_RELEASE}" CACHE STRING
         "Flags used by the compiler during release build." FORCE
     )
+	set(CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O2 -D_FORTIFY_SOURCE=1 ${CMAKE_USER_C_FLAGS}" CACHE STRING
+		"Flags used by the compiler during release build with debug information." FORCE
+	)
 
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
