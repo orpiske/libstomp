@@ -78,23 +78,26 @@ include_directories(
         ${APR_INCLUDE_DIR}
         ${APR_UTIL_INCLUDE_DIR}
         ${GRU_INCLUDE_DIR}
-        src)
+        src
+        src/common
+        src/transport)
 
 
 link_libraries(
         ${GRU_LIB}
 )
 
-
 add_library(
 	litestomp-${LITESTOMP_VERSION_MAJOR} SHARED
-	src/stomp_io.c
-	src/stomp_engine.c
-	src/stomp_status.c
+        src/common/stomp_status.c
+        src/transport/ls_transport_plain.c
+        src/stomp_io.c
+	    src/stomp_engine.c
+
 	src/stomp_message.c
 	src/stomp_ex_properties.c
 	src/stomp_messenger.c
-        src/transport/ls_transport_plain.c)
+	)
 
 target_link_libraries(
 	litestomp-${LITESTOMP_VERSION_MAJOR}

@@ -16,9 +16,12 @@
 #ifndef LITESTOMP_STOMP_TRANSPORT_PLAIN_H
 #define LITESTOMP_STOMP_TRANSPORT_PLAIN_H
 
-#include <common/gru_status.h>
-#include <network/gru_net.h>
+#include <stdint.h>
+#include <inttypes.h>
 
-#include "../stomp_status.h"
+#include <common/gru_status.h>
+
+#include "common/stomp_status.h"
+#include "common/ls_connection.h"
 
 #endif //LITESTOMP_STOMP_TRANSPORT_PLAIN_H
