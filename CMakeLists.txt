@@ -74,7 +74,16 @@ message(STATUS "APR util headers found at ${APR_UTIL_INCLUDE_DIR}")
 message(STATUS "APR util library found at ${APR_UTIL_LIB}")
 
 
-include_directories(${APR_INCLUDE_DIR} ${APR_UTIL_INCLUDE_DIR} src)
+include_directories(
+        ${APR_INCLUDE_DIR}
+        ${APR_UTIL_INCLUDE_DIR}
+        ${GRU_INCLUDE_DIR}
+        src)
+
+
+link_libraries(
+        ${GRU_LIB}
+)
 
 
 add_library(
@@ -84,7 +93,8 @@ add_library(
 	src/stomp_status.c
 	src/stomp_message.c
 	src/stomp_ex_properties.c
-	src/stomp_messenger.c)
+	src/stomp_messenger.c
+        src/transport/ls_transport_plain.c)
 
 target_link_libraries(
 	litestomp-${LITESTOMP_VERSION_MAJOR}
