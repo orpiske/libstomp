@@ -1,20 +1,24 @@
 project(litestomp)
 cmake_minimum_required(VERSION 2.8)
 
-set(LITESTOMP_VERSION 0.0.1)
+set(LITESTOMP_VERSION 0.1.0)
 set(LITESTOMP_VERSION_MAJOR 0)
-set(LITESTOMP_VERSION_MINOR 0)
-set(LITESTOMP_VERSION_PATCH 1)
+set(LITESTOMP_VERSION_MINOR 1)
+set(LITESTOMP_VERSION_PATCH 0)
 
 include(GNUInstallDirs)
+include(CheckLists.cmake)
+include(CMakeLists.default.cmake)
 
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/dist/cmake_uninstall.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/dist/cmake_uninstall.cmake"
-    IMMEDIATE @ONLY)
-
-add_custom_target(uninstall
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/dist/cmake_uninstall.cmake)
+if (UNIX)
+	message(STATUS "Adding Unix related build rules")
+	include(CMakeLists.unix.cmake)
+else (UNIX)
+	if (WIN32)
+		message(STATUS "Adding Windows related build rules")
+		include(CMakeLists.windows.cmake)
+	endif (WIN32)
+endif(UNIX)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/target/${CMAKE_INSTALL_BINDIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/target/${CMAKE_INSTALL_LIBDIR})
@@ -51,38 +55,6 @@ CHECK_INCLUDE_FILES(sys/types.h HAVE_SYS_TYPES_H)
 FailIfNotSet(HAVE_SYS_TYPES_H sys/types.h)
 
 
-IF (UNIX)
-	CHECK_INCLUDE_FILES(unistd.h HAVE_UNISTD_H)
-	FailIfNotSet(HAVE_UNISTD_H unistd.h)
-
-	CHECK_INCLUDE_FILES(stdint.h HAVE_STDINT_H)
-	FailIfNotSet(HAVE_STDINT_H stdint.h)
-
-	CHECK_INCLUDE_FILES(stdlib.h HAVE_STDLIB_H)
-	FailIfNotSet(HAVE_STDLIB_H stdlib.h)
-
-
-	CHECK_INCLUDE_FILES(stdio.h HAVE_STDIO_H)
-	FailIfNotSet(HAVE_STDIO_H stdio.h)
-ENDIF (UNIX)
-
-if (CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_C_FLAGS "-Wall -Wshadow -std=c99 -pipe ${CMAKE_C_FLAGS}" CACHE STRING
-        "Flags used by the compiler during all build types." FORCE
-    )
-    set(CMAKE_C_FLAGS_DEBUG "-fdiagnostics-color=auto -g ${CMAKE_C_FLAGS_DEBUG}" CACHE STRING
-        "Flags used by the compiler during debug build." FORCE
-    )
-    set(CMAKE_C_FLAGS_RELEASE "-O2 -fomit-frame-pointer -D_FORTIFY_SOURCE=1 ${CMAKE_C_FLAGS_RELEASE}" CACHE STRING
-        "Flags used by the compiler during release build." FORCE
-    )
-	set(CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O2 -D_FORTIFY_SOURCE=1 ${CMAKE_USER_C_FLAGS}" CACHE STRING
-		"Flags used by the compiler during release build with debug information." FORCE
-	)
-
-endif (CMAKE_COMPILER_IS_GNUCXX)
-
-
 add_custom_target(documentation
     COMMAND ${CMAKE_COMMAND} -P ../documentation.cmake)
 
@@ -112,8 +84,7 @@ add_library(
 	src/stomp_status.c
 	src/stomp_message.c
 	src/stomp_ex_properties.c
-	src/stomp_messenger.c
-)
+	src/stomp_messenger.c)
 
 target_link_libraries(
 	litestomp-${LITESTOMP_VERSION_MAJOR}
