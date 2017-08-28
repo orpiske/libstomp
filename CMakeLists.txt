@@ -66,11 +66,20 @@ IF (UNIX)
 	FailIfNotSet(HAVE_STDIO_H stdio.h)
 ENDIF (UNIX)
 
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-fdiagnostics-color=auto" HAS_COMPILER_COLORS)
+
 if (CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_C_FLAGS "-Wall -Wshadow -std=c99 -pipe ${CMAKE_C_FLAGS}" CACHE STRING
+	if (HAS_COMPILER_COLORS)
+		set(COMPILER_COLOR_FLAGS_OPTS "-fdiagnostics-color=auto")
+	else (HAS_COMPILER_COLORS)
+		set(COMPILER_COLOR_FLAGS_OPTS "")
+	endif (HAS_COMPILER_COLORS)
+
+    set(CMAKE_C_FLAGS "-Wall -Wshadow -std=c99 -pipe ${COMPILER_COLOR_FLAGS_OPTS} ${CMAKE_C_FLAGS}" CACHE STRING
         "Flags used by the compiler during all build types." FORCE
     )
-    set(CMAKE_C_FLAGS_DEBUG "-fdiagnostics-color=auto -g ${CMAKE_C_FLAGS_DEBUG}" CACHE STRING
+    set(CMAKE_C_FLAGS_DEBUG "-g ${CMAKE_C_FLAGS_DEBUG}" CACHE STRING
         "Flags used by the compiler during debug build." FORCE
     )
     set(CMAKE_C_FLAGS_RELEASE "-O2 -fomit-frame-pointer -D_FORTIFY_SOURCE=1 ${CMAKE_C_FLAGS_RELEASE}" CACHE STRING
