@@ -92,11 +92,6 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
-
-add_custom_target(documentation
-    COMMAND ${CMAKE_COMMAND} -P ../documentation.cmake)
-
-
 find_path(APR_INCLUDE_DIR apr_general.h
         PATH_SUFFIXES apr-1 apr-1.0)
 find_library(APR_LIB NAMES apr-1)
@@ -146,6 +141,13 @@ install(DIRECTORY src/
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}-${LITESTOMP_VERSION_MAJOR}
 	FILES_MATCHING PATTERN "*.h")
 
-
+if (BUILD_WITH_DOCUMENTATION)
+	add_custom_target(documentation ALL
+			COMMAND ${CMAKE_COMMAND} -P ../documentation.cmake)
+	install(
+			DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/target/share/doc
+			DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}-${LITESTOMP_VERSION_MAJOR}
+	)
+endif(BUILD_WITH_DOCUMENTATION)
 
 add_subdirectory(example)
