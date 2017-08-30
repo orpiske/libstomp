@@ -1,12 +1,8 @@
-%global _enable_debug_package 0
-%global debug_package %{nil}
-
 Summary:            A client library for the STOMP messaging protocol
 Name:               litestomp
 Version:            0.0.1
-Release:            8%{?dist}
+Release:            9%{?dist}
 License:            Apache-2.0
-Group:              Development/Tools
 Source:             litestomp-%{version}.tar.gz
 URL:                https://github.com/orpiske/litestomp
 BuildRequires:      cmake
@@ -14,8 +10,6 @@ BuildRequires:      make
 BuildRequires:      gcc
 BuildRequires:      apr-devel
 BuildRequires:      apr-util-devel
-Requires:           apr
-Requires:           apr-util
 
 
 %description
@@ -25,35 +19,58 @@ protocol that can be used to talk to message brokers such as Apace ActiveMQ.
 
 %package devel
 Summary:            STOMP client library development kit
-Requires:           litestomp
-Group:              Development/Libraries
+Requires:           %{name}%{?_isa} = %{version}-%{release}
 
 
 %description devel
 Development packages for the STOMP client library
 
+%package devel-doc
+Summary:            STOMP client library development kit documentation
+BuildArch:          noarch
+Obsoletes:          gru-devel-docs
+
+%description devel-doc
+Development documentation for the STOMP client library development
 
 %prep
 %autosetup -n litestomp-%{version}
 
 %build
 mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr ..
-make
+%cmake -DBUILD_WITH_DOCUMENTATION=ON -DCMAKE_USER_C_FLAGS="-fPIC" ..
+%make_build all documentation
 
 %install
 cd build
-make install
+%make_install
 
 %files
-%doc AUTHORS README.md LICENSE COPYING
-%{_libdir}/*
+%doc AUTHORS README.md
+%license LICENSE COPYING
+%{_libdir}/*.so.*
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
 
 %files devel
 %{_includedir}/*
+%{_libdir}/*.so
+
+%post devel -p /sbin/ldconfig
+
+%postun devel -p /sbin/ldconfig
+
+%files devel-doc
+%license LICENSE COPYING
+%{_datadir}/*
 
 
 %changelog
+* Wed Aug 30 2017 Otavio R. Piske <angusyoung@gmail.com> - 0.0.1-9
+- Adjusted to comply with Fedora packaging guidelines
+
 * Wed Aug 30 2017 Otavio R. Piske <angusyoung@gmail.com> - 0.0.1-8
 - Fixed mismatch between this package version and the SO version
 
