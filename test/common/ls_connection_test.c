@@ -35,5 +35,14 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 
+	printf("Connected\n");
+
+	ret = ls_connection_disconnect(ls_connection, &status);
+	if (ret != STOMP_SUCCESS) {
+		fprintf(stderr, "Disconnect failure: %s\n", status.message);
+
+		return EXIT_FAILURE;
+	}
+
 	return EXIT_SUCCESS;
 }

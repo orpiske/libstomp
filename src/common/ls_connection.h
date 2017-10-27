@@ -52,11 +52,20 @@ void ls_connection_destroy(ls_connection_t **ptr);
 
 /**
  * Connects the connection
- * @param connection  the connection to connect
+ * @param connection the connection to connect
  * @param status a status object
  * @return STOMP_SUCCESS if successful or STOMP_FAILURE otherwise
  */
 stomp_status_code_t ls_connection_connect(ls_connection_t *connection, gru_status_t *status);
+
+
+/**
+ * Disconnects the connection
+ * @param connection the connection to disconnect
+ * @param status a status object
+ * @return STOMP_SUCCESS if successful or STOMP_FAILURE otherwise
+ */
+stomp_status_code_t ls_connection_disconnect(ls_connection_t *connection, gru_status_t *status);
 
 #ifdef __cplusplus
 }

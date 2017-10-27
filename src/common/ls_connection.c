@@ -74,3 +74,7 @@ stomp_status_code_t ls_connection_connect(ls_connection_t *connection, gru_statu
 }
 
 
+stomp_status_code_t ls_connection_disconnect(ls_connection_t *connection, gru_status_t *status) {
+	gru_net_close_socket(&connection->socket);
+	return STOMP_SUCCESS;
+}
