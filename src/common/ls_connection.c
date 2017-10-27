@@ -45,6 +45,8 @@ void ls_connection_destroy(ls_connection_t **ptr) {
 		return;
 	}
 
+	gru_net_shutdown();
+
 	gru_uri_cleanup(&connection->url);
 	gru_dealloc((void **) ptr);
 }
@@ -70,3 +72,5 @@ stomp_status_code_t ls_connection_connect(ls_connection_t *connection, gru_statu
 
 	return STOMP_SUCCESS;
 }
+
+
