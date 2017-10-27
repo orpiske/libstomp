@@ -22,6 +22,7 @@ endif(UNIX)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/target/${CMAKE_INSTALL_BINDIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/target/${CMAKE_INSTALL_LIBDIR})
+set(BUILD_WITH_UNIT_TESTS ON CACHE BOOL "Build unit tests")
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 	# TODO: POSIX_C_SOURCE is, probably, not necessary. Check and fix.
@@ -90,7 +91,7 @@ link_libraries(
 add_library(
 	litestomp-${LITESTOMP_VERSION_MAJOR} SHARED
         src/common/stomp_status.c
-        src/transport/ls_transport_plain.c
+		src/common/ls_connection.c
         src/stomp_io.c
 	    src/stomp_engine.c
 
@@ -114,6 +115,11 @@ install(DIRECTORY src/
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}-${LITESTOMP_VERSION_MAJOR}
 	FILES_MATCHING PATTERN "*.h")
 
-
-
 add_subdirectory(example)
+
+if (BUILD_WITH_UNIT_TESTS)
+	enable_testing()
+
+	include_directories(test)
+	add_subdirectory(test)
+endif (BUILD_WITH_UNIT_TESTS)

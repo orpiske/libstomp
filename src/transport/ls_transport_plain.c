@@ -15,23 +15,3 @@
 */
 #include "ls_transport_plain.h"
 
-stomp_status_code_t ls_transport_plain_connect(ls_connection_t *connection, gru_status_t *status) {
-	int init = gru_net_init();
-
-	if (init != 0) {
-		gru_status_set(status, GRU_FAILURE, "Failed to initialize networking library");
-
-		return STOMP_FAILURE;
-	}
-
-	char service[6] = {0};
-	snprintf(service, sizeof(service), "%"PRIu16"", connection->port);
-
-
-	if (gru_net_open_socket(&connection->socket, connection->host, service) < 0) {
-		gru_status_set(status, GRU_FAILURE, "Failed to open the socket and connect to the broker");
-	}
-
-
-	return STOMP_SUCCESS;
-}
