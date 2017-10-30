@@ -13,38 +13,36 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- * 
+ *
  * ********************************************************************
- * The contents of this file are part of the original stomp.c and stomp.h file 
- * from which this code is derived. The contents of the file have been modified 
- * to comply with project formatting, as well as additions for connection 
+ * The contents of this file are part of the original stomp.c and stomp.h file
+ * from which this code is derived. The contents of the file have been modified
+ * to comply with project formatting, as well as additions for connection
  * credentials
  */
 #ifndef STOMP_CONNECTION_H
 #define STOMP_CONNECTION_H
 
 #include <apr_general.h>
-#include <apr_network_io.h>
 #include <apr_hash.h>
+#include <apr_network_io.h>
 
 #include "stomp_frame.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
-    
+
 /**
  * Stomp connection reference object
  * @internal
  */
-typedef struct stomp_connection
-{
-    apr_socket_t *socket;
-    apr_sockaddr_t *local_sa;
-    char *local_ip;
-    apr_sockaddr_t *remote_sa;
-    char *remote_ip;
+typedef struct stomp_connection {
+	apr_socket_t *socket;
+	apr_sockaddr_t *local_sa;
+	char *local_ip;
+	apr_sockaddr_t *remote_sa;
+	char *remote_ip;
 } stomp_connection;
 
 #ifdef __cplusplus
@@ -52,4 +50,3 @@ typedef struct stomp_connection
 #endif
 
 #endif /* STOMP_CONNECTION_H */
-

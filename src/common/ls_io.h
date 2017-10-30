@@ -16,8 +16,8 @@
 #ifndef LITESTOMP_LS_IO_H
 #define LITESTOMP_LS_IO_H
 
-#include <common/stomp_status.h>
 #include <common/ls_connection.h>
+#include <common/stomp_status.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,4 +27,4 @@ extern "C" {
 }
 #endif
 
-#endif //LITESTOMP_LS_IO_H
+#endif // LITESTOMP_LS_IO_H

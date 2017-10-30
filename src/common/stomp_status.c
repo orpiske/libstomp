@@ -15,33 +15,34 @@
  */
 #include "stomp_status.h"
 
-void stomp_status_set(stomp_status_t *status, stomp_status_code_t code,
-        const char *message, ...)
-{
-    va_list ap;
+void stomp_status_set(stomp_status_t *status,
+	stomp_status_code_t code,
+	const char *message,
+	...) {
+	va_list ap;
 
-    if (status->message != NULL) {
-        stomp_status_reset(status);
-    }
-
-    if (message != NULL) {
-        va_start(ap, message);
-        if (vasprintf(&status->message, message, ap) == -1) {
-	    fprintf(stderr, "Unable to allocate memory for the message: %s", message);
+	if (status->message != NULL) {
+		stomp_status_reset(status);
 	}
-        va_end(ap);
-    }
 
-    status->code = code;
+	if (message != NULL) {
+		va_start(ap, message);
+		if (vasprintf(&status->message, message, ap) == -1) {
+			fprintf(stderr, "Unable to allocate memory for the message: %s", message);
+		}
+		va_end(ap);
+	}
+
+	status->code = code;
 }
 
 void stomp_status_reset(stomp_status_t *status) {
-    free(status->message);
-    status->message = NULL;
+	free(status->message);
+	status->message = NULL;
 }
 
 void stomp_status_success(stomp_status_t *status) {
-    stomp_status_set(status, STOMP_SUCCESS, NULL);
+	stomp_status_set(status, STOMP_SUCCESS, NULL);
 }
 
 
@@ -50,5 +51,5 @@ inline bool stomp_success(stomp_status_code_t stat) {
 }
 
 inline bool stomp_error(stomp_status_code_t stat) {
-    return stat & STOMP_SUCCESS ? false : true;
+	return stat & STOMP_SUCCESS ? false : true;
 }

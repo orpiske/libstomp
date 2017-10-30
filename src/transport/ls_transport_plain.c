@@ -14,4 +14,3 @@
  limitations under the License.
 */
 #include "ls_transport_plain.h"
-

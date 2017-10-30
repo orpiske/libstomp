@@ -16,11 +16,11 @@
 #ifndef LITESTOMP_LS_CONNECTION_H
 #define LITESTOMP_LS_CONNECTION_H
 
-#include <common/gru_status.h>
 #include <common/gru_alloc.h>
+#include <common/gru_status.h>
 
-#include <network/gru_uri.h>
 #include <network/gru_net.h>
+#include <network/gru_uri.h>
 
 #include "stomp_status.h"
 
@@ -56,7 +56,8 @@ void ls_connection_destroy(ls_connection_t **ptr);
  * @param status a status object
  * @return STOMP_SUCCESS if successful or STOMP_FAILURE otherwise
  */
-stomp_status_code_t ls_connection_connect(ls_connection_t *connection, gru_status_t *status);
+stomp_status_code_t ls_connection_connect(ls_connection_t *connection,
+	gru_status_t *status);
 
 
 /**
@@ -65,10 +66,11 @@ stomp_status_code_t ls_connection_connect(ls_connection_t *connection, gru_statu
  * @param status a status object
  * @return STOMP_SUCCESS if successful or STOMP_FAILURE otherwise
  */
-stomp_status_code_t ls_connection_disconnect(ls_connection_t *connection, gru_status_t *status);
+stomp_status_code_t ls_connection_disconnect(ls_connection_t *connection,
+	gru_status_t *status);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif //LITESTOMP_LS_CONNECTION_H
+#endif // LITESTOMP_LS_CONNECTION_H

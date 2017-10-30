@@ -16,8 +16,8 @@
 #include "ls_connection.h"
 
 struct ls_connection_t_ {
-  gru_uri_t url;
-  gru_net_socket_t socket;
+	gru_uri_t url;
+	gru_net_socket_t socket;
 };
 
 ls_connection_t *ls_connection_new(const char *url, gru_status_t *status) {
@@ -51,7 +51,8 @@ void ls_connection_destroy(ls_connection_t **ptr) {
 	gru_dealloc((void **) ptr);
 }
 
-stomp_status_code_t ls_connection_connect(ls_connection_t *connection, gru_status_t *status) {
+stomp_status_code_t ls_connection_connect(ls_connection_t *connection,
+	gru_status_t *status) {
 	int init = gru_net_init();
 
 	if (init != 0) {
@@ -61,10 +62,11 @@ stomp_status_code_t ls_connection_connect(ls_connection_t *connection, gru_statu
 	}
 
 	char service[6] = {0};
-	snprintf(service, sizeof(service), "%"PRIu16"", connection->url.port);
+	snprintf(service, sizeof(service), "%" PRIu16 "", connection->url.port);
 
 	if (gru_net_open_socket(&connection->socket, connection->url.host, service) < 0) {
-		gru_status_set(status, GRU_FAILURE, "Failed to open the socket and connect to the broker");
+		gru_status_set(
+			status, GRU_FAILURE, "Failed to open the socket and connect to the broker");
 
 		return STOMP_FAILURE;
 	}
@@ -74,7 +76,8 @@ stomp_status_code_t ls_connection_connect(ls_connection_t *connection, gru_statu
 }
 
 
-stomp_status_code_t ls_connection_disconnect(ls_connection_t *connection, gru_status_t *status) {
+stomp_status_code_t ls_connection_disconnect(ls_connection_t *connection,
+	gru_status_t *status) {
 	gru_net_close_socket(&connection->socket);
 	return STOMP_SUCCESS;
 }

@@ -30,17 +30,17 @@ extern "C" {
  * STOMP message
  */
 typedef struct stomp_message_t_ {
-    /**
-     * Message size
-     */
-    size_t size;
+	/**
+	 * Message size
+	 */
+	size_t size;
 
-    /**
-     * Message body
-     */
-    char *body;
+	/**
+	 * Message body
+	 */
+	char *body;
 
-    apr_pool_t *pool;
+	apr_pool_t *pool;
 } stomp_message_t;
 
 
@@ -72,4 +72,3 @@ void stomp_message_format(stomp_message_t *message, const char *data, size_t len
 #endif
 
 #endif /* STOMP_MESSAGE_H */
-

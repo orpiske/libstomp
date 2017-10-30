@@ -16,6 +16,8 @@
 #include "ls_io.h"
 #include "ls_frame.h"
 
-stomp_status_code_t ls_io_read_frame(ls_connection_t *connection, ls_frame_t *frame, gru_status_t *status) {
+stomp_status_code_t ls_io_read_frame(ls_connection_t *connection,
+	ls_frame_t *frame,
+	gru_status_t *status) {
 	return STOMP_FAILURE;
 }

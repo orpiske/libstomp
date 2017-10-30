@@ -17,41 +17,41 @@
 #define STOMP_H_
 
 #include <apr_general.h>
-#include <apr_network_io.h>
 #include <apr_hash.h>
+#include <apr_network_io.h>
 #include <apr_uri.h>
 
-#include "stomp_status.h"
 #include "stomp_connection.h"
 #include "stomp_engine.h"
-#include "stomp_frame.h"
-#include "stomp_io.h"
-#include "stomp_headers.h"
 #include "stomp_ex_properties.h"
+#include "stomp_frame.h"
+#include "stomp_headers.h"
+#include "stomp_io.h"
 #include "stomp_message.h"
+#include "stomp_status.h"
 
 typedef apr_uri_t stomp_uri_t;
 
 typedef enum stomp_options_t_ {
-    STOMP_OPT_DEFAULT = 0,
-    /**
-     * Removes the / from beginning of the path (required for Artemis broker)
-     */
-    STOMP_OPT_STRIP_ROOT = 1,
+	STOMP_OPT_DEFAULT = 0,
+	/**
+	 * Removes the / from beginning of the path (required for Artemis broker)
+	 */
+	STOMP_OPT_STRIP_ROOT = 1,
 } stomp_options_t;
 
 /**
  * This struct provides an abstraction for some of the message exchange details
  */
 typedef struct stomp_messenger_t_ {
-    stomp_connection *connection;
-    // TODO: not exactly the ideal place for this (nor the ideal design), but
-    // will remain in this place until I come up with a better solution
-    stomp_exchange_properties_t *exchange_properties;
-    stomp_status_t status;
-    apr_pool_t *pool;
-    stomp_uri_t uri;
-    stomp_options_t options;
+	stomp_connection *connection;
+	// TODO: not exactly the ideal place for this (nor the ideal design), but
+	// will remain in this place until I come up with a better solution
+	stomp_exchange_properties_t *exchange_properties;
+	stomp_status_t status;
+	apr_pool_t *pool;
+	stomp_uri_t uri;
+	stomp_options_t options;
 } stomp_messenger_t;
 
 
@@ -75,20 +75,19 @@ void stomp_messenger_destroy(stomp_messenger_t **messenger);
  * @return A messenger object that can be used to exchange data via STOMP
  * @param timeout the timeout in milliseconds
  */
-void stomp_messenger_set_timeout(stomp_messenger_t *messenger,
-                                              int32_t timeout);
+void stomp_messenger_set_timeout(stomp_messenger_t *messenger, int32_t timeout);
 
 
 /**
  * Sets the communication endpoint for the message exchange.
  * @param messenger An instance of the messenger object
- * @param uri A connection uri in the stomp://[user]:[password]@<hostname>:<port>/<endpoint address>
+ * @param uri A connection uri in the
+ * stomp://[user]:[password]@<hostname>:<port>/<endpoint address>
  * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure,
  * the code will set the error details on the status member of the messenger
  * object
  */
-stomp_status_code_t stomp_set_endpoint(stomp_messenger_t *messenger,
-        const char *uri);
+stomp_status_code_t stomp_set_endpoint(stomp_messenger_t *messenger, const char *uri);
 
 
 /**
@@ -103,8 +102,8 @@ stomp_status_code_t stomp_set_endpoint(stomp_messenger_t *messenger,
  * object
  */
 stomp_status_code_t stomp_connect(stomp_messenger_t *messenger,
-                                  stomp_connection_header_t *header,
-                                  int32_t timeout);
+	stomp_connection_header_t *header,
+	int32_t timeout);
 
 
 /**
@@ -118,8 +117,7 @@ stomp_status_code_t stomp_connect(stomp_messenger_t *messenger,
  * object
  */
 stomp_status_code_t stomp_disconnect(stomp_messenger_t *messenger,
-                                  stomp_disconnection_header_t *header);
-
+	stomp_disconnection_header_t *header);
 
 
 /**
@@ -133,7 +131,7 @@ stomp_status_code_t stomp_disconnect(stomp_messenger_t *messenger,
  * object
  */
 stomp_status_code_t stomp_subscribe(stomp_messenger_t *messenger,
-                                  stomp_subscription_header_t *header);
+	stomp_subscription_header_t *header);
 
 
 /**
@@ -147,7 +145,7 @@ stomp_status_code_t stomp_subscribe(stomp_messenger_t *messenger,
  * object
  */
 stomp_status_code_t stomp_unsubscribe(stomp_messenger_t *messenger,
-                                  stomp_subscription_header_t *header);
+	stomp_subscription_header_t *header);
 
 
 /**
@@ -160,8 +158,7 @@ stomp_status_code_t stomp_unsubscribe(stomp_messenger_t *messenger,
  * the code will set the error details on the status member of the messenger
  * object
  */
-stomp_status_code_t stomp_ack(stomp_messenger_t *messenger,
-                                  stomp_ack_header_t *header);
+stomp_status_code_t stomp_ack(stomp_messenger_t *messenger, stomp_ack_header_t *header);
 
 
 /**
@@ -174,8 +171,7 @@ stomp_status_code_t stomp_ack(stomp_messenger_t *messenger,
  * the code will set the error details on the status member of the messenger
  * object
  */
-stomp_status_code_t stomp_nack(stomp_messenger_t *messenger,
-                                  stomp_ack_header_t *header);
+stomp_status_code_t stomp_nack(stomp_messenger_t *messenger, stomp_ack_header_t *header);
 
 
 /**
@@ -189,7 +185,7 @@ stomp_status_code_t stomp_nack(stomp_messenger_t *messenger,
  * object
  */
 stomp_status_code_t stomp_begin(stomp_messenger_t *messenger,
-                                  stomp_transaction_header_t *header);
+	stomp_transaction_header_t *header);
 
 
 /**
@@ -203,7 +199,7 @@ stomp_status_code_t stomp_begin(stomp_messenger_t *messenger,
  * object
  */
 stomp_status_code_t stomp_commit(stomp_messenger_t *messenger,
-                                  stomp_transaction_header_t *header);
+	stomp_transaction_header_t *header);
 
 
 /**
@@ -217,7 +213,7 @@ stomp_status_code_t stomp_commit(stomp_messenger_t *messenger,
  * object
  */
 stomp_status_code_t stomp_abort(stomp_messenger_t *messenger,
-                                  stomp_transaction_header_t *header);
+	stomp_transaction_header_t *header);
 
 
 /**
@@ -232,8 +228,8 @@ stomp_status_code_t stomp_abort(stomp_messenger_t *messenger,
  * object
  */
 stomp_status_code_t stomp_send(stomp_messenger_t *messenger,
-                                  stomp_send_header_t *header,
-                                  stomp_message_t *message);
+	stomp_send_header_t *header,
+	stomp_message_t *message);
 
 
 /**
@@ -246,12 +242,11 @@ stomp_status_code_t stomp_send(stomp_messenger_t *messenger,
  * @param message the message to exchange
  * @return STOMP_SUCCESS if successful or STOMP_FAILURE is failed. Upon failure,
  * the code will set the error details on the status member of the messenger
- * object. If there's a timeout, a composed response of STOMP_SUCCESS and STOMP_NO_DATA 
+ * object. If there's a timeout, a composed response of STOMP_SUCCESS and STOMP_NO_DATA
  * will be returned.
  */
 stomp_status_code_t stomp_receive(stomp_messenger_t *messenger,
-                                  stomp_receive_header_t *header,
-                                  stomp_message_t *message);
+	stomp_receive_header_t *header,
+	stomp_message_t *message);
 
 #endif /* STOMP_H_ */
-

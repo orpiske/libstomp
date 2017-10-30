@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-/* 
+/*
  * File:   stomp_ex_properties.h
  * Author: opiske
  *
@@ -24,8 +24,7 @@
 #include "stomp_status.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #define STOMP_CREATION_TIME "creation"
@@ -33,15 +32,14 @@ extern "C"
 typedef apr_hash_t stomp_hash_t;
 
 /**
- * This type holds application properties set at the exchange level (in other 
- * words, it sets properties that get appended as STOMP headers in the 
- * transaction). The exchange properties are durable throughout the message 
- * exchange lifetime, therefore they should be cleared if undesired for some 
+ * This type holds application properties set at the exchange level (in other
+ * words, it sets properties that get appended as STOMP headers in the
+ * transaction). The exchange properties are durable throughout the message
+ * exchange lifetime, therefore they should be cleared if undesired for some
  * particular transaction.
  */
-typedef struct stomp_exchange_properties_t_
-{
-    stomp_hash_t *hash;
+typedef struct stomp_exchange_properties_t_ {
+	stomp_hash_t *hash;
 } stomp_exchange_properties_t;
 
 
@@ -52,7 +50,8 @@ typedef struct stomp_exchange_properties_t_
  * @param value the value of the property
  */
 void stomp_exchange_add(stomp_exchange_properties_t *properties,
-                        const char *name, const char *value);
+	const char *name,
+	const char *value);
 
 
 /**
@@ -61,8 +60,7 @@ void stomp_exchange_add(stomp_exchange_properties_t *properties,
  * @param name the name of the property
  * @return value the value of the property
  */
-const char *stomp_exchange_get(stomp_exchange_properties_t *properties,
-                               const char *name);
+const char *stomp_exchange_get(stomp_exchange_properties_t *properties, const char *name);
 
 
 /**
@@ -78,11 +76,10 @@ void stomp_exchange_clear(stomp_exchange_properties_t *properties);
  * @param properties the properties data structure to be read
  */
 stomp_status_code_t stomp_exchange_util_ctime(stomp_exchange_properties_t *properties,
-                                              stomp_status_t *stat);
+	stomp_status_t *stat);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* STOMP_EX_PROPERTIES_H */
-

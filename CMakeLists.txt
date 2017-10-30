@@ -55,6 +55,10 @@ include (CheckIncludeFiles)
 CHECK_INCLUDE_FILES(sys/types.h HAVE_SYS_TYPES_H)
 FailIfNotSet(HAVE_SYS_TYPES_H sys/types.h)
 
+add_custom_target(format
+		COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/util/format.sh
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		)
 
 add_custom_target(documentation
     COMMAND ${CMAKE_COMMAND} -P ../documentation.cmake)

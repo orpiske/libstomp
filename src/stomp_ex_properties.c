@@ -16,47 +16,40 @@
 #include "stomp_ex_properties.h"
 #include "stomp_status.h"
 
-void
-stomp_exchange_add(stomp_exchange_properties_t *properties,
-        const char *name, const char *value)
-{
-    apr_hash_set((apr_hash_t *) properties->hash, name, APR_HASH_KEY_STRING, value);
+void stomp_exchange_add(stomp_exchange_properties_t *properties,
+	const char *name,
+	const char *value) {
+	apr_hash_set((apr_hash_t *) properties->hash, name, APR_HASH_KEY_STRING, value);
 }
 
-const char *
-stomp_exchange_get(stomp_exchange_properties_t *properties,
-        const char *name)
-{
-    return apr_hash_get((apr_hash_t *) properties->hash, name, APR_HASH_KEY_STRING);
+const char *stomp_exchange_get(stomp_exchange_properties_t *properties,
+	const char *name) {
+	return apr_hash_get((apr_hash_t *) properties->hash, name, APR_HASH_KEY_STRING);
 }
 
-void
-stomp_exchange_clear(stomp_exchange_properties_t *properties)
-{
-    apr_hash_clear((apr_hash_t *) properties->hash);
+void stomp_exchange_clear(stomp_exchange_properties_t *properties) {
+	apr_hash_clear((apr_hash_t *) properties->hash);
 }
 
-stomp_status_code_t
-stomp_exchange_util_ctime(stomp_exchange_properties_t *properties,
-                          stomp_status_t *stat)
-{
-    apr_time_t now = apr_time_now();
-    apr_pool_t *pool =  apr_hash_pool_get((apr_hash_t *) properties->hash);
+stomp_status_code_t stomp_exchange_util_ctime(stomp_exchange_properties_t *properties,
+	stomp_status_t *stat) {
+	apr_time_t now = apr_time_now();
+	apr_pool_t *pool = apr_hash_pool_get((apr_hash_t *) properties->hash);
 
-    if (!pool) {
-        if (stat) {
-            stomp_status_set(stat, STOMP_FAILURE,
-                "Invalid exchange properties structure");
-        }
+	if (!pool) {
+		if (stat) {
+			stomp_status_set(
+				stat, STOMP_FAILURE, "Invalid exchange properties structure");
+		}
 
-        return STOMP_FAILURE;
-    }
+		return STOMP_FAILURE;
+	}
 
-    const size_t buff_size = 32;
-    char *buff = apr_pcalloc(pool, buff_size);
+	const size_t buff_size = 32;
+	char *buff = apr_pcalloc(pool, buff_size);
 
-    snprintf(buff, buff_size, "%"PRIi64"", apr_time_as_msec(now));
+	snprintf(buff, buff_size, "%" PRIi64 "", apr_time_as_msec(now));
 
-    stomp_exchange_add(properties, STOMP_CREATION_TIME, buff);
-    return STOMP_SUCCESS;
+	stomp_exchange_add(properties, STOMP_CREATION_TIME, buff);
+	return STOMP_SUCCESS;
 }

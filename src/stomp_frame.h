@@ -13,9 +13,9 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- * 
+ *
  * ********************************************************************
- * The contents of this file are part of the original stomp.c and stomp.h file 
+ * The contents of this file are part of the original stomp.c and stomp.h file
  * from which this code is derived
  */
 #ifndef STOMP_FRAME_H
@@ -32,12 +32,11 @@ extern "C" {
  * STOMP frame reference object
  * \internal
  */
-typedef struct stomp_frame
-{
-    char *command;
-    apr_hash_t *headers;
-    char *body;
-    apr_size_t body_length;
+typedef struct stomp_frame {
+	char *command;
+	apr_hash_t *headers;
+	char *body;
+	apr_size_t body_length;
 } stomp_frame;
 
 
@@ -46,4 +45,3 @@ typedef struct stomp_frame
 #endif
 
 #endif /* STOMP_FRAME_H */
-

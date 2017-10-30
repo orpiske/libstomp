@@ -13,14 +13,14 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- * 
+ *
  * ********************************************************************
- * The original content of this file has been modified to that it was split in 
- * different files: stomp_io.c, stomp_io.h, stomp_connection.h, stomp_frame.h. 
- * 
+ * The original content of this file has been modified to that it was split in
+ * different files: stomp_io.c, stomp_io.h, stomp_connection.h, stomp_frame.h.
+ *
  * This file, itself, was renamed from stomp.c to stomp_engine.h. Additionally
- * the contents of this file were modified in order to match the project 
- * formatting guidelines and add documentation. 
+ * the contents of this file were modified in order to match the project
+ * formatting guidelines and add documentation.
  */
 #ifndef STOMP_ENGINE_H
 #define STOMP_ENGINE_H
@@ -30,10 +30,10 @@
 #include <string.h>
 
 #include <apr.h>
-#include <apr_strings.h>
 #include <apr_general.h>
-#include <apr_network_io.h>
 #include <apr_hash.h>
+#include <apr_network_io.h>
+#include <apr_strings.h>
 
 #include "stomp_connection.h"
 #include "stomp_frame.h"
@@ -41,8 +41,7 @@
 #include "stomp_status.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif /* __cplusplus */
 
 
@@ -52,21 +51,23 @@ extern "C"
  * @param hostname
  * @param port
  * @param pool
- * @return 
+ * @return
  */
-APR_DECLARE(apr_status_t) stomp_engine_connect(stomp_connection **connection_ref, 
-                                               const char *hostname, 
-                                               int port, apr_pool_t *pool);
+APR_DECLARE(apr_status_t)
+stomp_engine_connect(stomp_connection **connection_ref,
+	const char *hostname,
+	int port,
+	apr_pool_t *pool);
 
 
 /**
  * Sets blocking mode
  * @param connection_ref
  * @param timeout in microseconds
- * @return 
+ * @return
  */
-APR_DECLARE(apr_status_t) stomp_engine_set_timeout(stomp_connection *connection,
-                                                    apr_int64_t timeout);
+APR_DECLARE(apr_status_t)
+stomp_engine_set_timeout(stomp_connection *connection, apr_int64_t timeout);
 
 
 /**
@@ -75,14 +76,14 @@ APR_DECLARE(apr_status_t) stomp_engine_set_timeout(stomp_connection *connection,
  * @param hostname
  * @param port
  * @param pool
- * @return 
+ * @return
  */
 APR_DECLARE(apr_status_t) stomp_engine_disconnect(stomp_connection **connection_ref);
 
 
 /**
  * Gets the last stomp engine status
- * @return The last status 
+ * @return The last status
  */
 stomp_status_t stomp_engine_last_status();
 
@@ -90,4 +91,4 @@ stomp_status_t stomp_engine_last_status();
 }
 #endif
 
-#endif  /* ! STOMP_ENGINE_H */
+#endif /* ! STOMP_ENGINE_H */

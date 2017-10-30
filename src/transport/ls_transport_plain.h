@@ -16,15 +16,16 @@
 #ifndef LITESTOMP_STOMP_TRANSPORT_PLAIN_H
 #define LITESTOMP_STOMP_TRANSPORT_PLAIN_H
 
-#include <stdint.h>
 #include <inttypes.h>
+#include <stdint.h>
 
 #include <common/gru_status.h>
 #include <network/gru_net.h>
 
-#include "common/stomp_status.h"
 #include "common/ls_connection.h"
+#include "common/stomp_status.h"
 
-// gru_export stomp_status_code_t ls_transport_plain_connect(ls_connection_t *connection, gru_status_t *status);
+// gru_export stomp_status_code_t ls_transport_plain_connect(ls_connection_t *connection,
+// gru_status_t *status);
 
-#endif //LITESTOMP_STOMP_TRANSPORT_PLAIN_H
+#endif // LITESTOMP_STOMP_TRANSPORT_PLAIN_H
