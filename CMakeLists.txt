@@ -92,6 +92,7 @@ add_library(
 	litestomp-${LITESTOMP_VERSION_MAJOR} SHARED
         src/common/stomp_status.c
 		src/common/ls_connection.c
+		src/common/ls_io.c
         src/stomp_io.c
 	    src/stomp_engine.c
 
