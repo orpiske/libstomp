@@ -15,23 +15,8 @@
  */
 #include "ls_frame.h"
 
-enum ls_command_t_ {
-	STOMP_FRAME_CONNECT,
-	STOMP_FRAME_CONNECTED,
-	STOMP_FRAME_SEND,
-	STOMP_FRAME_SUBSCRIBE,
-	STOMP_FRAME_UNSUBSCRIBE,
-	STOMP_FRAME_ACK,
-	STOMP_FRAME_NACK,
-	STOMP_FRAME_BEGIN,
-	STOMP_FRAME_COMMIT,
-	STOMP_FRAME_ABORT,
-	STOMP_FRAME_DISCONNECT,
-	STOMP_FRAME_MESSAGE,
-	STOMP_FRAME_RECEIPT,
-	STOMP_FRAME_ERROR,
-};
-
 struct ls_frame_t_ {
 	ls_command_t command;
+  	ls_header_t *headers;
+	ls_body_t *body;
 };

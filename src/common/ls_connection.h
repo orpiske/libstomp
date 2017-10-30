@@ -69,6 +69,14 @@ stomp_status_code_t ls_connection_connect(ls_connection_t *connection,
 stomp_status_code_t ls_connection_disconnect(ls_connection_t *connection,
 	gru_status_t *status);
 
+
+/**
+ * Get the connection socket
+ * @param connection
+ * @return
+ */
+gru_net_socket_t ls_connection_get_socket(ls_connection_t *connection);
+
 #ifdef __cplusplus
 }
 #endif

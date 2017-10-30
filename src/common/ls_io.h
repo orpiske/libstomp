@@ -16,12 +16,17 @@
 #ifndef LITESTOMP_LS_IO_H
 #define LITESTOMP_LS_IO_H
 
-#include <common/ls_connection.h>
-#include <common/stomp_status.h>
+#include <common/gru_status.h>
+
+#include "stomp_status.h"
+#include "ls_connection.h"
+#include "ls_frame.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+stomp_status_code_t ls_io_read_frame(ls_connection_t *connection, ls_frame_t *frame, gru_status_t *status);
 
 #ifdef __cplusplus
 }

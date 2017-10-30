@@ -20,7 +20,23 @@ target_link_libraries(
 )
 
 add_test(
-	NAME ls_connection_test
-	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/target/tests/bin
-	COMMAND ls_connection_test ${LITESTOMP_TEST_BROKER}
+		NAME ls_connection_test
+		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/target/tests/bin
+		COMMAND ls_connection_test ${LITESTOMP_TEST_BROKER}
+)
+
+add_executable(
+		ls_io_test
+		common/ls_io_test.c
+)
+
+target_link_libraries(
+		ls_io_test
+		litestomp-${LITESTOMP_VERSION_MAJOR}
+)
+
+add_test(
+		NAME ls_io_test
+		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/target/tests/bin
+		COMMAND ls_io_test ${LITESTOMP_TEST_BROKER}
 )

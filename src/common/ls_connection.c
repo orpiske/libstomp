@@ -81,3 +81,8 @@ stomp_status_code_t ls_connection_disconnect(ls_connection_t *connection,
 	gru_net_close_socket(&connection->socket);
 	return STOMP_SUCCESS;
 }
+
+
+gru_net_socket_t ls_connection_get_socket(ls_connection_t *connection) {
+	return connection->socket;
+}

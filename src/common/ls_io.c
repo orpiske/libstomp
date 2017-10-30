@@ -16,8 +16,13 @@
 #include "ls_io.h"
 #include "ls_frame.h"
 
-stomp_status_code_t ls_io_read_frame(ls_connection_t *connection,
-	ls_frame_t *frame,
-	gru_status_t *status) {
+stomp_status_code_t ls_io_read_frame(ls_connection_t *connection, ls_frame_t *frame, gru_status_t *status) {
+	gru_net_socket_t socket = ls_connection_get_socket(connection);
+
+	char buff[1024] = {0};
+
+	int ret = gru_net_recv(&socket, &buff, sizeof(buff));
+	fprintf(stderr, "Received: %s\n", buff);
+
 	return STOMP_FAILURE;
 }
