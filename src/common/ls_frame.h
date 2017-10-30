@@ -16,10 +16,15 @@
 #ifndef LITESTOMP_LS_FRAME_H
 #define LITESTOMP_LS_FRAME_H
 
+#include <stdint.h>
+
 #include <collection/gru_list.h>
 #include <common/gru_alloc.h>
 #include <common/gru_status.h>
 
+#include "stomp_status.h"
+#include "ls_connection.h"
+#include "ls_frame.h"
 
 typedef char ls_body_t;
 typedef gru_list_t ls_header_t;
@@ -42,5 +47,11 @@ typedef enum ls_command_t_ {
 } ls_command_t;
 
 typedef struct ls_frame_t_ ls_frame_t;
+
+char *ls_frame_serialize(const ls_frame_t *frame, int *size, gru_status_t *status);
+stomp_status_code_t ls_frame_deserialize(ls_frame_t *frame, uint64_t size, gru_status_t *status);
+
+
+ls_frame_t *ls_frame_connect(gru_status_t *status);
 
 #endif // LITESTOMP_LS_FRAME_H

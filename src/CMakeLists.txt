@@ -6,6 +6,7 @@ add_library(
         litestomp-${LITESTOMP_VERSION_MAJOR} SHARED
         common/stomp_status.c
         common/ls_connection.c
+        common/ls_frame.c
         common/ls_io.c
         stomp_io.c
         stomp_engine.c

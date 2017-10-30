@@ -14,7 +14,6 @@
  *    limitations under the License.
  */
 #include "ls_io.h"
-#include "ls_frame.h"
 
 stomp_status_code_t ls_io_read_frame(ls_connection_t *connection, ls_frame_t *frame, gru_status_t *status) {
 	gru_net_socket_t socket = ls_connection_get_socket(connection);
@@ -22,7 +21,34 @@ stomp_status_code_t ls_io_read_frame(ls_connection_t *connection, ls_frame_t *fr
 	char buff[1024] = {0};
 
 	int ret = gru_net_recv(&socket, &buff, sizeof(buff));
-	fprintf(stderr, "Received: %s\n", buff);
+	if (ret > 0) {
+		logger_t logger = gru_logger_get();
+
+		logger(GRU_DEBUG, "Received (%d): %s", ret, buff);
+
+		return STOMP_SUCCESS;
+	}
 
 	return STOMP_FAILURE;
+}
+
+stomp_status_code_t ls_io_write_frame(ls_connection_t *connection, ls_frame_t *frame, gru_status_t *status) {
+	int size = 0;
+	char *data = ls_frame_serialize(frame, &size, status);
+
+	if (!data || size == -1) {
+		return STOMP_FAILURE;
+	}
+
+	logger_t logger = gru_logger_get();
+	logger(GRU_TRACE, "Sending frame: %s", data);
+
+	gru_net_socket_t socket = ls_connection_get_socket(connection);
+	if (gru_net_send(&socket, data, size) != 0) {
+		gru_status_set(status, GRU_FAILURE, gru_net_get_last_error());
+
+		return STOMP_FAILURE;
+	}
+
+	return STOMP_SUCCESS;
 }
