@@ -15,6 +15,11 @@ add_library(
         stomp_messenger.c
 )
 
+set_target_properties(
+        litestomp-${LITESTOMP_VERSION_MAJOR} PROPERTIES
+        VERSION ${LITESTOMP_VERSION}
+        SOVERSION ${LITESTOMP_VERSION_MAJOR})
+
 target_link_libraries(
         litestomp-${LITESTOMP_VERSION_MAJOR}
         ${APR_LIB}
