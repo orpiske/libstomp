@@ -59,62 +59,9 @@ FailIfNotSet(HAVE_SYS_TYPES_H sys/types.h)
 add_custom_target(documentation
     COMMAND ${CMAKE_COMMAND} -P ../documentation.cmake)
 
+include_directories(src)
 
-find_path(APR_INCLUDE_DIR apr_general.h
-        PATH_SUFFIXES apr-1 apr-1.0)
-find_library(APR_LIB NAMES apr-1)
-
-message(STATUS "APR headers found at ${APR_INCLUDE_DIR}")
-message(STATUS "APR library found at ${APR_LIB}")
-
-find_path(APR_UTIL_INCLUDE_DIR apu.h
-        PATH_SUFFIXES apr-1 apr-1.0)
-find_library(APR_UTIL_LIB NAMES aprutil-1)
-
-message(STATUS "APR util headers found at ${APR_UTIL_INCLUDE_DIR}")
-message(STATUS "APR util library found at ${APR_UTIL_LIB}")
-
-
-include_directories(
-        ${APR_INCLUDE_DIR}
-        ${APR_UTIL_INCLUDE_DIR}
-        ${GRU_INCLUDE_DIR}
-        src
-        src/common
-        src/transport)
-
-
-link_libraries(
-        ${GRU_LIB}
-)
-
-add_library(
-	litestomp-${LITESTOMP_VERSION_MAJOR} SHARED
-        src/common/stomp_status.c
-		src/common/ls_connection.c
-		src/common/ls_io.c
-        src/stomp_io.c
-	    src/stomp_engine.c
-
-	src/stomp_message.c
-	src/stomp_ex_properties.c
-	src/stomp_messenger.c
-	)
-
-target_link_libraries(
-	litestomp-${LITESTOMP_VERSION_MAJOR}
-	${APR_LIB}
-	${APR_UTIL_LIB}
-)
-
-install(TARGETS
-	litestomp-${LITESTOMP_VERSION_MAJOR}
-	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-)
-
-install(DIRECTORY src/
-	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}-${LITESTOMP_VERSION_MAJOR}
-	FILES_MATCHING PATTERN "*.h")
+add_subdirectory(src/ objs)
 
 add_subdirectory(example)
 
