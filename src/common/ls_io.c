@@ -18,13 +18,13 @@
 stomp_status_code_t ls_io_read_frame(ls_connection_t *connection, ls_frame_t *frame, gru_status_t *status) {
 	gru_net_socket_t socket = ls_connection_get_socket(connection);
 
-	char buff[1024] = {0};
+	char buff[10] = {0};
 
 	int ret = gru_net_recv(&socket, &buff, sizeof(buff));
 	if (ret > 0) {
 		logger_t logger = gru_logger_get();
 
-		logger(GRU_DEBUG, "Received (%d): %s", ret, buff);
+		logger(GRU_DEBUG, "Received (%d):\n%s", ret, buff);
 
 		return STOMP_SUCCESS;
 	}
@@ -41,7 +41,7 @@ stomp_status_code_t ls_io_write_frame(ls_connection_t *connection, ls_frame_t *f
 	}
 
 	logger_t logger = gru_logger_get();
-	logger(GRU_TRACE, "Sending frame: %s", data);
+	logger(GRU_TRACE, "Sending frame (%d):\n%s", size, data);
 
 	gru_net_socket_t socket = ls_connection_get_socket(connection);
 	if (gru_net_send(&socket, data, size) != 0) {

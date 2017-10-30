@@ -17,9 +17,13 @@
 
 #include <common/ls_connection.h>
 #include <common/ls_io.h>
+#include <common/ls_frame.h>
+#include <common/ls_debug.h>
 
 
 int main(int argc, char **argv) {
+	ls_log_initialization();
+
 	gru_status_t status = gru_status_new();
 	ls_connection_t *ls_connection = ls_connection_new(argv[1], &status);
 
@@ -38,7 +42,11 @@ int main(int argc, char **argv) {
 
 	printf("Connected\n");
 
-	ret = ls_io_read_frame(ls_connection, NULL, &status);
+	ls_frame_t *frame = ls_frame_connect(&status);
+
+	ret = ls_io_write_frame(ls_connection, frame, &status);
+
+	ls_io_read_frame(ls_connection, NULL, &status);
 
 	ret = ls_connection_disconnect(ls_connection, &status);
 	if (ret != STOMP_SUCCESS) {
