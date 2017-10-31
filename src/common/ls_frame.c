@@ -13,7 +13,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-#include <common/gru_variant.h>
 #include "ls_frame.h"
 
 struct ls_frame_t_ {

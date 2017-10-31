@@ -21,6 +21,7 @@
 #include <collection/gru_list.h>
 #include <common/gru_alloc.h>
 #include <common/gru_status.h>
+#include <common/gru_variant.h>
 
 #include "stomp_status.h"
 #include "ls_connection.h"
