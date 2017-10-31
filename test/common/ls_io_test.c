@@ -43,13 +43,35 @@ static int connect_frame_test(int argc, char **argv) {
 	printf("Connected\n");
 
 	ls_frame_t *frame = ls_frame_connect(&status);
+	if (!frame) {
+		fprintf(stderr, "Unable to create a new frame structure: %s\n", status.message);
+
+		return EXIT_FAILURE;
+	}
+
+	gru_keypair_t *host = gru_keypair_new(&status);
+	if (!host) {
+		fprintf(stderr, "Unable to create a new keypair for setting the host: %s\n", status.message);
+
+		goto err_exit_0;
+	}
+
+	gru_keypair_set_key(host, "host");
+	gru_variant_set_string(host->pair, ls_connection_get_host(ls_connection));
+
+	if (!ls_frame_set_header(frame, host, &status)) {
+		fprintf(stderr, "Unable to set the frame header: %s\n", status.message);
+
+		goto err_exit_1;
+	}
+
 
 	printf("Sending hello frame\n");
 	ret = ls_io_write_frame(ls_connection, frame, &status);
 	if (ret != STOMP_SUCCESS) {
 		fprintf(stderr, "Error sending data: %s\n", status.message);
 
-		goto err_exit_0;
+		goto err_exit_1;
 	}
 
 	printf("Sent hello frame\n");
@@ -57,18 +79,21 @@ static int connect_frame_test(int argc, char **argv) {
 	if (ret != STOMP_SUCCESS) {
 		fprintf(stderr, "Error receiving data: %s\n", status.message);
 
-		goto err_exit_0;
+		goto err_exit_1;
 	}
 
 	ret = ls_connection_disconnect(ls_connection, &status);
 	if (ret != STOMP_SUCCESS) {
 		fprintf(stderr, "Disconnect failure: %s\n", status.message);
 
-		goto err_exit_0;
+		goto err_exit_1;
 	}
 
 	ls_frame_destroy(&frame);
 	return EXIT_SUCCESS;
+
+	err_exit_1:
+	gru_keypair_destroy(&host);
 
 	err_exit_0:
 	ls_frame_destroy(&frame);
