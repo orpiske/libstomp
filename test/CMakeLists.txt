@@ -38,5 +38,5 @@ target_link_libraries(
 add_test(
 		NAME ls_io_test
 		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/target/tests/bin
-		COMMAND ls_io_test ${LITESTOMP_TEST_BROKER}
+		COMMAND ls_io_test connect ${LITESTOMP_TEST_BROKER}
 )

@@ -21,7 +21,7 @@
 #include <common/ls_debug.h>
 
 
-int main(int argc, char **argv) {
+static int connect_frame_test(int argc, char **argv) {
 	ls_log_initialization();
 
 	gru_status_t status = gru_status_new();
@@ -44,14 +44,45 @@ int main(int argc, char **argv) {
 
 	ls_frame_t *frame = ls_frame_connect(&status);
 
+	printf("Sending hello frame\n");
 	ret = ls_io_write_frame(ls_connection, frame, &status);
+	if (ret != STOMP_SUCCESS) {
+		fprintf(stderr, "Error sending data: %s\n", status.message);
 
-	ls_io_read_frame(ls_connection, NULL, &status);
+		return EXIT_FAILURE;
+	}
+
+	printf("Sent hello frame\n");
+	ret = ls_io_read_frame(ls_connection, NULL, &status);
+	if (ret != STOMP_SUCCESS) {
+		fprintf(stderr, "Error receiving data: %s\n", status.message);
+
+		return EXIT_FAILURE;
+	}
 
 	ret = ls_connection_disconnect(ls_connection, &status);
 	if (ret != STOMP_SUCCESS) {
 		fprintf(stderr, "Disconnect failure: %s\n", status.message);
 
+		return EXIT_FAILURE;
+	}
+
+	return EXIT_SUCCESS;
+}
+
+
+int main(int argc, char **argv) {
+	if (argc < 2) {
+		fprintf(stderr, "Missing test case name\n");
+
+		return EXIT_FAILURE;
+	}
+
+	if (strcmp(argv[1], "connect") == 0) {
+		if (!connect_frame_test(argc, &argv[1])) {
+			return EXIT_FAILURE;
+		}
+	} else {
 		return EXIT_FAILURE;
 	}
 
