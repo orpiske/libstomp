@@ -22,8 +22,6 @@ struct ls_frame_t_ {
   ls_body_t *body;
 };
 
-void *ls_header_serializer(const void *, void *);
-
 char *ls_frame_headers(const ls_header_t *headers, gru_status_t *status) {
 	gru_node_t *node = NULL;
 
