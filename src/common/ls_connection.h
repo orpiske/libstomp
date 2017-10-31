@@ -77,6 +77,14 @@ stomp_status_code_t ls_connection_disconnect(ls_connection_t *connection,
  */
 gru_net_socket_t ls_connection_get_socket(ls_connection_t *connection);
 
+
+/**
+ * Get the connection hostname/IP
+ * @param connection the connection object
+ * @return The connection hostname
+ */
+const char *ls_connection_get_host(ls_connection_t *connection);
+
 #ifdef __cplusplus
 }
 #endif
