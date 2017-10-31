@@ -135,6 +135,33 @@ stomp_status_code_t ls_frame_deserialize(ls_frame_t *frame, uint64_t size, gru_s
 	return STOMP_FAILURE;
 }
 
+static void ls_frame_destroy_header_entries(void **ptr) {
+	gru_keypair_t *kp = *ptr;
+
+	if (!kp) {
+		return;
+	}
+
+	gru_keypair_destroy(&kp);
+}
+
+void ls_frame_destroy(ls_frame_t **ptr) {
+	ls_frame_t *frame = *ptr;
+
+	if (!frame) {
+		return;
+	}
+
+	if (frame->headers) {
+		gru_list_clean(frame->headers, ls_frame_destroy_header_entries);
+		gru_list_destroy(&frame->headers);
+	}
+
+	if (frame->body != NULL) {
+		gru_dealloc_string(&frame->body);
+	}
+}
+
 ls_frame_t *ls_frame_connect(gru_status_t *status) {
 	ls_frame_t *ret = gru_alloc(sizeof(ls_frame_t), status);
 	gru_alloc_check(ret, NULL);

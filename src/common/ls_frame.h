@@ -48,10 +48,35 @@ typedef enum ls_command_t_ {
 
 typedef struct ls_frame_t_ ls_frame_t;
 
+/**
+ * Serialize a STOMP frame
+ * @param frame the frame to serialize
+ * @param size the number of bytes that were serialized
+ * @param status status structure
+ * @return a pointer of chars or NULL in case of errors
+ */
 char *ls_frame_serialize(const ls_frame_t *frame, int *size, gru_status_t *status);
+
+/**
+ * Deserialize a STOMP frame
+ * @param frame
+ * @param size
+ * @param status
+ * @return
+ */
 stomp_status_code_t ls_frame_deserialize(ls_frame_t *frame, uint64_t size, gru_status_t *status);
 
+/**
+ * Destroys a STOMP frame
+ * @param ptr pointer to the frame
+ */
+void ls_frame_destroy(ls_frame_t **ptr);
 
+/**
+ * Create a new STOMP connect frame
+ * @param status status structure
+ * @return a new STOMP connect frame or false otherwise
+ */
 ls_frame_t *ls_frame_connect(gru_status_t *status);
 
 #endif // LITESTOMP_LS_FRAME_H
