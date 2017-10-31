@@ -18,18 +18,36 @@
 stomp_status_code_t ls_io_read_frame(ls_connection_t *connection, ls_frame_t *frame, gru_status_t *status) {
 	gru_net_socket_t socket = ls_connection_get_socket(connection);
 
-	char buff[4096] = {0};
+	gru_net_set_t set;
 
-	int ret = gru_net_recv(&socket, &buff, sizeof(buff));
-	if (ret > 0) {
-		logger_t logger = gru_logger_get();
-
-		logger(GRU_DEBUG, "Received (%d):\n%s", ret, buff);
-
-		return STOMP_SUCCESS;
+	gru_net_init_socket_set(&set);
+	if (gru_net_add_socket_to_set(&socket, &set) < 0) {
+		gru_status_set(status, GRU_FAILURE, "Unable to initialize socket set");
 	}
 
-	return STOMP_FAILURE;
+	int sock_stat = gru_net_check_socket_set(&set, 0.5);
+	if (sock_stat < 0) {
+		gru_status_set(status, GRU_FAILURE, "Unable to check the socket status: %s", gru_net_get_last_error());
+
+		return STOMP_FAILURE;
+	}
+	else {
+		if (sock_stat == 0) {
+			return STOMP_SUCCESS | STOMP_NO_DATA;
+		}
+	}
+
+	logger_t logger = gru_logger_get();
+
+	int ret = 0;
+	char buff[4096] = {0};
+	do {
+		ret = gru_net_recv(&socket, &buff, sizeof(buff));
+
+		logger(GRU_DEBUG, "Received (%d):\n%s", ret, buff);
+	} while (ret == sizeof(buff));
+
+	return STOMP_SUCCESS;
 }
 
 stomp_status_code_t ls_io_write_frame(ls_connection_t *connection, ls_frame_t *frame, gru_status_t *status) {
