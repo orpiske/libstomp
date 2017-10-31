@@ -80,4 +80,13 @@ void ls_frame_destroy(ls_frame_t **ptr);
  */
 ls_frame_t *ls_frame_connect(gru_status_t *status);
 
+/**
+ * Set a header into the frame object
+ * @param frame frame object to set the header onto
+ * @param kp keypair structure
+ * @param status status structure in case of error
+ * @return true if successfully set the header or false otherwise
+ */
+bool ls_frame_set_header(ls_frame_t *frame, const gru_keypair_t *kp, gru_status_t *status);
+
 #endif // LITESTOMP_LS_FRAME_H

@@ -79,7 +79,6 @@ static char *ls_frame_serialize_connect(const ls_frame_t *frame, int *size, gru_
 		}
 
 		gru_dealloc_string(&header);
-		return NULL;
 	}
 	else {
 		if (unlikely(gru_status_error(status))) {
@@ -170,4 +169,19 @@ ls_frame_t *ls_frame_connect(gru_status_t *status) {
 	ret->body = NULL;
 
 	return ret;
+}
+
+bool ls_frame_set_header(ls_frame_t *frame, const gru_keypair_t *kp, gru_status_t *status) {
+	gru_keypair_t *clone = gru_keypair_clone(kp, status);
+	gru_alloc_check(clone, false);
+
+	if (!gru_list_append(frame->headers, clone)) {
+		gru_status_set(status, GRU_FAILURE, "Unable to set frame header");
+
+		gru_keypair_destroy(&clone);
+
+		return false;
+	}
+
+	return true;
 }
