@@ -49,7 +49,7 @@ static int connect_frame_test(int argc, char **argv) {
 	if (ret != STOMP_SUCCESS) {
 		fprintf(stderr, "Error sending data: %s\n", status.message);
 
-		return EXIT_FAILURE;
+		goto err_exit_0;
 	}
 
 	printf("Sent hello frame\n");
@@ -57,17 +57,22 @@ static int connect_frame_test(int argc, char **argv) {
 	if (ret != STOMP_SUCCESS) {
 		fprintf(stderr, "Error receiving data: %s\n", status.message);
 
-		return EXIT_FAILURE;
+		goto err_exit_0;
 	}
 
 	ret = ls_connection_disconnect(ls_connection, &status);
 	if (ret != STOMP_SUCCESS) {
 		fprintf(stderr, "Disconnect failure: %s\n", status.message);
 
-		return EXIT_FAILURE;
+		goto err_exit_0;
 	}
 
+	ls_frame_destroy(&frame);
 	return EXIT_SUCCESS;
+
+	err_exit_0:
+	ls_frame_destroy(&frame);
+	return EXIT_FAILURE;
 }
 
 
