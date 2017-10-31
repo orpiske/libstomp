@@ -73,7 +73,7 @@ static char *ls_frame_serialize_connect(const ls_frame_t *frame, int *size, gru_
 	 * be able to connect to STOMP 1.2 servers ...
 	 */
 	if (header) {
-		*size = asprintf(&ret, "%s\naccept-version:1.2\n%s", "STOMP", header);
+		*size = asprintf(&ret, "%s\naccept-version:1.2\n%s\n", "STOMP", header);
 		if (*size == -1) {
 			gru_dealloc_string(&header);
 
@@ -89,7 +89,7 @@ static char *ls_frame_serialize_connect(const ls_frame_t *frame, int *size, gru_
 			return NULL;
 		}
 
-		*size = asprintf(&ret, "%s\naccept-version:1.2\n", "STOMP");
+		*size = asprintf(&ret, "%s\naccept-version:1.2\n\n", "STOMP");
 		if (*size == -1) {
 			gru_status_set(status, GRU_FAILURE, "Not enough memory to serialize STOMP frame");
 			return NULL;
@@ -100,9 +100,12 @@ static char *ls_frame_serialize_connect(const ls_frame_t *frame, int *size, gru_
 }
 
 char *ls_frame_serialize(const ls_frame_t *frame, int *size, gru_status_t *status) {
+	char *ret = NULL;
+
 	switch (frame->command) {
 	case STOMP_FRAME_CONNECT: {
-		return ls_frame_serialize_connect(frame, size, status);
+		ret = ls_frame_serialize_connect(frame, size, status);
+		break;
 	}
 	case STOMP_FRAME_CONNECTED:
 	case STOMP_FRAME_SEND:
@@ -123,7 +126,11 @@ char *ls_frame_serialize(const ls_frame_t *frame, int *size, gru_status_t *statu
 	}
 	}
 
-	return NULL;
+	if (ret) {
+		*size += 1;
+	}
+
+	return ret;
 }
 
 stomp_status_code_t ls_frame_deserialize(ls_frame_t *frame, uint64_t size, gru_status_t *status) {
