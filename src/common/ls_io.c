@@ -15,7 +15,7 @@
  */
 #include "ls_io.h"
 
-stomp_status_code_t ls_io_read_frame(ls_connection_t *connection, ls_frame_t *frame, gru_status_t *status) {
+static stomp_status_code_t ls_io_read_buffer(ls_connection_t *connection, char **out, gru_status_t *status) {
 	gru_net_socket_t socket = ls_connection_get_socket(connection);
 
 	gru_net_set_t set;
@@ -41,13 +41,25 @@ stomp_status_code_t ls_io_read_frame(ls_connection_t *connection, ls_frame_t *fr
 
 	int ret = 0;
 	char buff[4096] = {0};
+
 	do {
+		char *frame = realloc(frame, 4096);
+		if (!frame) {
+
+		}
 		ret = gru_net_recv(&socket, &buff, sizeof(buff));
 
 		logger(GRU_DEBUG, "Received (%d):\n%s", ret, buff);
+
+
+
 	} while (ret == sizeof(buff));
 
 	return STOMP_SUCCESS;
+}
+
+stomp_status_code_t ls_io_read_frame(ls_connection_t *connection, ls_frame_t *frame, gru_status_t *status) {
+
 }
 
 stomp_status_code_t ls_io_write_frame(ls_connection_t *connection, ls_frame_t *frame, gru_status_t *status) {
